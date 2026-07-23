@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLoading } from "@/hooks/useLoading";
+import { PageSkeleton, CardSkeleton } from "@/components/Skeletons";
+import { cn } from "@/lib/utils";
 
 const allCourses = [
   { title: "Forex Fundamentals", category: "In Progress", difficulty: "Beginner", progress: 75, lessons: 24, completed: 18, hours: 12, rating: 4.8, image: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=400&h=250&fit=crop" },
@@ -19,7 +22,10 @@ const allCourses = [
 export function MyCoursesPage() {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const isLoading = useLoading();
   const filtered = allCourses.filter((c) => (filter === "All" || c.category === filter) && c.title.toLowerCase().includes(search.toLowerCase()));
+
+  if (isLoading) return <PageSkeleton stats={4} cards={2} list={3} />;
 
   return (
     <div className="flex flex-col xl:flex-row gap-10">
@@ -38,26 +44,34 @@ export function MyCoursesPage() {
             </TabsList>
           </Tabs>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          {filtered.map((course) => (
-            <Card key={course.title} className="rounded-[18px] border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow duration-150 cursor-pointer">
-              <div className="h-36"><img src={course.image} alt={course.title} className="w-full h-full object-cover" /></div>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <h3 className="font-medium text-[15px] text-text-primary">{course.title}</h3>
-                  <div className="flex items-center gap-1 text-warning text-[13px] font-medium"><Star className="w-3.5 h-3.5 fill-current" /> {course.rating}</div>
-                </div>
-                <div className="flex items-center gap-3 text-[13px] text-text-muted mb-3">
-                  <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> {course.completed}/{course.lessons}</span>
-                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {course.hours}h</span>
-                  <Badge className="bg-primary/8 text-primary hover:bg-primary/8 rounded text-[10px] border-0">{course.difficulty}</Badge>
-                </div>
-                <div className="mb-3"><div className="flex justify-between text-[13px] mb-1"><span className="text-text-muted">Progress</span><span className="font-medium text-text-primary">{course.progress}%</span></div><Progress value={course.progress} className="h-1.5" /></div>
-                <Button className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-8 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">{course.progress === 0 ? "Start Course" : course.progress === 100 ? "Review" : "Continue"} <ChevronRight className="w-3.5 h-3.5 ml-1" /></Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <Card className="rounded-[18px] border-border shadow-card p-12 text-center">
+            <BookOpen className="w-8 h-8 text-text-muted mx-auto mb-3" />
+            <h3 className="text-[15px] font-medium text-text-primary mb-1">No courses found</h3>
+            <p className="text-[13px] text-text-muted">Try adjusting your search or filter.</p>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
+            {filtered.map((course) => (
+              <Card key={course.title} className="rounded-[18px] border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow duration-150 cursor-pointer">
+                <div className="h-36"><img src={course.image} alt={course.title} className="w-full h-full object-cover" /></div>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h3 className="font-medium text-[15px] text-text-primary">{course.title}</h3>
+                    <div className="flex items-center gap-1 text-warning text-[13px] font-medium"><Star className="w-3.5 h-3.5 fill-current" /> {course.rating}</div>
+                  </div>
+                  <div className="flex items-center gap-3 text-[13px] text-text-muted mb-3">
+                    <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" /> {course.completed}/{course.lessons}</span>
+                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {course.hours}h</span>
+                    <Badge className="bg-primary/8 text-primary hover:bg-primary/8 rounded text-[10px] border-0">{course.difficulty}</Badge>
+                  </div>
+                  <div className="mb-3"><div className="flex justify-between text-[13px] mb-1"><span className="text-text-muted">Progress</span><span className="font-medium text-text-primary">{course.progress}%</span></div><Progress value={course.progress} className="h-1.5" /></div>
+                  <Button className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-8 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">{course.progress === 0 ? "Start Course" : course.progress === 100 ? "Review" : "Continue"} <ChevronRight className="w-3.5 h-3.5 ml-1" /></Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
       <div className="w-full xl:w-80 space-y-6">
         <Card className="rounded-[18px] border-border shadow-card">
