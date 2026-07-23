@@ -24,6 +24,8 @@ const DownloadsPage = React.lazy(() => import("@/components/DownloadsPage").then
 const SettingsPage = React.lazy(() => import("@/components/SettingsPage").then((m) => ({ default: m.SettingsPage })));
 const TradingToolsPage = React.lazy(() => import("@/components/TradingToolsPage").then((m) => ({ default: m.TradingToolsPage })));
 const MarketScreenerPage = React.lazy(() => import("@/components/MarketScreenerPage").then((m) => ({ default: m.MarketScreenerPage })));
+const LessonQuizPage = React.lazy(() => import("@/components/LessonQuizPage").then((m) => ({ default: m.LessonQuizPage })));
+const ChallengePaymentPage = React.lazy(() => import("@/components/ChallengePaymentPage").then((m) => ({ default: m.ChallengePaymentPage })));
 
 function PageLoader() {
   return (
@@ -170,6 +172,8 @@ function AppContent() {
       case "live": return <LiveClassesPage />;
       case "tradingview": return <TradingViewPage />;
       case "screener": return <MarketScreenerPage />;
+      case "quiz": return <LessonQuizPage />;
+      case "payment": return <ChallengePaymentPage />;
       case "community": return <CommunityPage />;
       case "certificates": return <CertificatesPage />;
       case "downloads": return <DownloadsPage />;

@@ -21,6 +21,8 @@ import {
   ScanSearch,
   PanelLeftClose,
   PanelLeftOpen,
+  HelpCircle,
+  Rocket,
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -35,6 +37,8 @@ const navItems = [
   { key: "live", label: "Live Classes", icon: Video },
   { key: "tradingview", label: "TradingView", icon: BarChart3 },
   { key: "screener", label: "Screener", icon: ScanSearch },
+  { key: "quiz", label: "Lesson Quiz", icon: HelpCircle },
+  { key: "payment", label: "Challenge", icon: Rocket },
   { key: "community", label: "Community", icon: Users },
   { key: "certificates", label: "Certificates", icon: Award },
   { key: "downloads", label: "Downloads", icon: Download },

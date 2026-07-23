@@ -50,6 +50,7 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { downloadCoursePdf } from "@/lib/downloadPdf";
 
 const menuItems = [
   { key: "profile", label: "Profile", icon: User },
@@ -187,7 +188,7 @@ export function SettingsPage() {
             <Card className="rounded-[18px] border-border shadow-card">
               <CardHeader><CardTitle className="text-base font-semibold text-text-primary">Data & Privacy</CardTitle></CardHeader>
               <CardContent className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors duration-150"><div className="flex items-center gap-2.5"><Download className="w-4 h-4 text-primary" /><div><p className="text-[13px] font-medium text-text-primary">Export My Data</p><p className="text-[11px] text-text-muted">Download a copy of all your data</p></div></div><Button size="sm" variant="outline" className="rounded-button border-border text-[12px] h-7">Export</Button></div>
+                <div className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors duration-150"><div className="flex items-center gap-2.5"><Download className="w-4 h-4 text-primary" /><div><p className="text-[13px] font-medium text-text-primary">Export My Data</p><p className="text-[11px] text-text-muted">Download a copy of all your data</p></div></div><Button onClick={downloadCoursePdf} size="sm" variant="outline" className="rounded-button border-border text-[12px] h-7">Export</Button></div>
                 <div className="flex items-center justify-between p-3 rounded-button border border-danger/20 hover:border-danger/40 transition-colors duration-150"><div className="flex items-center gap-2.5"><Trash2 className="w-4 h-4 text-danger" /><div><p className="text-[13px] font-medium text-danger">Delete Account</p><p className="text-[11px] text-text-muted">Permanently delete your account and data</p></div></div><Button size="sm" variant="outline" className="rounded-button border-danger/20 text-danger hover:bg-danger/5 text-[12px] h-7">Delete</Button></div>
               </CardContent>
             </Card>
@@ -334,7 +335,7 @@ export function SettingsPage() {
             </Card>
             <Card className="rounded-[18px] border-border shadow-card">
               <CardContent className="space-y-2">
-                <div className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors duration-150"><div className="flex items-center gap-2.5"><Download className="w-4 h-4 text-primary" /><div><p className="text-[13px] font-medium text-text-primary">Export Data</p><p className="text-[11px] text-text-muted">Download all your data</p></div></div><Button size="sm" variant="outline" className="rounded-button border-border text-[12px] h-7">Export</Button></div>
+                <div className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors duration-150"><div className="flex items-center gap-2.5"><Download className="w-4 h-4 text-primary" /><div><p className="text-[13px] font-medium text-text-primary">Export Data</p><p className="text-[11px] text-text-muted">Download all your data</p></div></div><Button onClick={downloadCoursePdf} size="sm" variant="outline" className="rounded-button border-border text-[12px] h-7">Export</Button></div>
                 <div className="flex items-center justify-between p-3 rounded-button border border-danger/20"><div className="flex items-center gap-2.5"><Trash2 className="w-4 h-4 text-danger" /><div><p className="text-[13px] font-medium text-danger">Delete Account</p><p className="text-[11px] text-text-muted">This action is irreversible</p></div></div><Button size="sm" variant="outline" className="rounded-button border-danger/20 text-danger hover:bg-danger/5 text-[12px] h-7">Delete</Button></div>
               </CardContent>
             </Card>
