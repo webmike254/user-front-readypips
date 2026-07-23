@@ -118,7 +118,7 @@ function CertificateViewer({ cert, onClose }: { cert: typeof certificates[0]; on
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-10 text-[13px] font-medium transition-all">
+            <Button className="btn-gradient-animated rounded-button h-10 text-[13px] font-medium transition-all">
               <Download className="w-4 h-4 mr-1.5" /> Download PDF
             </Button>
             <Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary text-[13px] h-10">
@@ -180,7 +180,7 @@ export function CertificatesPage() {
           <Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-[13px] h-9">
             <Share2 className="w-4 h-4 mr-1.5" /> Share Profile
           </Button>
-          <Button className="bg-primary hover:bg-primary-hover text-white rounded-button text-[13px] font-medium h-9 px-4 transition-all duration-150 hover:-translate-y-px">
+          <Button className="btn-gradient-animated rounded-button text-[13px] font-medium h-9 px-4 transition-all duration-150 hover:-translate-y-px">
             <ExternalLink className="w-4 h-4 mr-1.5" /> Public Portfolio
           </Button>
         </div>
@@ -235,7 +235,7 @@ export function CertificatesPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all"
+                  className="btn-gradient-animated rounded-button h-9 text-[13px] font-medium transition-all"
                   onClick={() => setSelectedCert(certificates[0])}
                 >
                   <Eye className="w-4 h-4 mr-1.5" /> View Certificate
@@ -351,7 +351,7 @@ export function CertificatesPage() {
                             <Progress value={cert.score} className="h-1.5" />
                           </div>
                         </div>
-                        <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-8 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
+                        <Button className="btn-gradient-animated rounded-button h-8 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
                           <BookOpen className="w-3.5 h-3.5 mr-1" /> Continue
                         </Button>
                       </div>

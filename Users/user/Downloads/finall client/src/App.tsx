@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
-import { useState, useEffect, useRef } from "react";
-import { Search, Bell, MessageSquare, Menu, Globe, Clock, ChevronRight, Home, X, TrendingUp, Trophy, Award, Video, BookOpen } from "lucide-react";
+import React, { Suspense, useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
+import { Search, Bell, MessageSquare, Menu, Globe, Clock, ChevronRight, Home, TrendingUp, Award, Video, BookOpen } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
 import { SidebarProvider, useSidebar } from "@/components/SidebarProvider";
 import { NetworkProvider } from "@/components/NetworkProvider";
@@ -83,6 +83,7 @@ function SearchDropdown() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -97,9 +98,15 @@ function SearchDropdown() {
     { label: "Live Classes", page: "live", icon: Video },
     { label: "TradingView", page: "tradingview", icon: TrendingUp },
     { label: "Lesson Quiz", page: "quiz", icon: Award },
-    { label: "Competitions", page: "competition", icon: Trophy },
+    { label: "Competitions", page: "competition", icon: Award },
     { label: "Certificates", page: "certificates", icon: Award },
   ].filter((r) => r.label.toLowerCase().includes(query.toLowerCase()));
+
+  const handleNavigate = (page: string) => {
+    setOpen(false);
+    setQuery("");
+    navigate(`/${page}`);
+  };
 
   return (
     <div className="relative" ref={ref}>
@@ -143,7 +150,7 @@ function SearchDropdown() {
                   return (
                     <button
                       key={r.label}
-                      onClick={() => { setOpen(false); setQuery(""); }}
+                      onClick={() => handleNavigate(r.page)}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] hover:bg-bg text-left transition-colors"
                     >
                       <div className="w-7 h-7 rounded-[8px] bg-primary/8 flex items-center justify-center">
@@ -386,7 +393,6 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
   return (
     <header className="sticky top-0 z-20 px-4 md:px-6 lg:px-8 pt-4 pb-2 bg-bg/80 backdrop-blur-md">
       <div className="max-w-dashboard mx-auto flex items-center justify-between gap-3">
-        {/* Left: Mobile menu + Logo + Breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => setMobileOpen(true)}
@@ -400,7 +406,6 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
           </div>
         </div>
 
-        {/* Right: Functional elements */}
         <div className="flex items-center gap-2">
           <SearchDropdown />
           <NotificationsDropdown />
@@ -409,8 +414,8 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
             <LiveClock />
           </div>
           <Avatar className="h-9 w-9 border-2 border-border cursor-pointer hover:border-primary/30 transition-colors">
-            <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Ahmed" />
-            <AvatarFallback className="bg-primary text-white text-xs">AB</AvatarFallback>
+            <AvatarImage src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mike&backgroundColor=b6e3f4&scale=90" alt="Mike Muchemi" />
+            <AvatarFallback className="bg-primary text-white text-xs">MM</AvatarFallback>
           </Avatar>
         </div>
       </div>
@@ -419,10 +424,20 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
 }
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get current page from URL path
+  const path = location.pathname.replace("/", "") || "dashboard";
+  const currentPage = path;
+
+  const handleNavigate = (page: string) => {
+    navigate(`/${page}`);
+  };
 
   const renderPage = () => {
-    switch (currentPage) {
+    const page = currentPage;
+    switch (page) {
       case "dashboard": return <Dashboard />;
       case "courses": return <MyCoursesPage />;
       case "live": return <LiveClassesPage />;
@@ -441,17 +456,15 @@ function AppContent() {
   };
 
   return (
-    <PageContext.Provider value={{ currentPage, setCurrentPage }}>
+    <PageContext.Provider value={{ currentPage, setCurrentPage: handleNavigate }}>
       <div className="min-h-screen flex bg-bg">
-        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        <Sidebar currentPage={currentPage} setCurrentPage={handleNavigate} />
 
-        {/* 3-column layout on xl+, 2-column on lg, 1-column on <lg */}
         <div className="flex-1 flex min-w-0">
-          {/* Main content area */}
           <div className="flex-1 flex flex-col min-w-0">
-            <FloatingTopBar currentPage={currentPage} onNavigate={setCurrentPage} />
+            <FloatingTopBar currentPage={currentPage} onNavigate={handleNavigate} />
 
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: "touch" }}>
               <div className="max-w-dashboard mx-auto px-4 md:px-6 lg:px-8 pb-8">
                 <ErrorBoundary>
                   <Suspense fallback={<PageLoader />}>
@@ -472,8 +485,7 @@ function AppContent() {
             </main>
           </div>
 
-          {/* Right sidebar - visible on xl+ */}
-          <RightSidebar />
+          {!["tradingview", "courses", "subscriptions"].includes(currentPage) && <RightSidebar />}
         </div>
       </div>
     </PageContext.Provider>
@@ -482,13 +494,17 @@ function AppContent() {
 
 function App() {
   return (
-    <NetworkProvider>
-      <SidebarProvider>
-        <ToasterProvider>
-          <AppContent />
-        </ToasterProvider>
-      </SidebarProvider>
-    </NetworkProvider>
+    <BrowserRouter>
+      <NetworkProvider>
+        <SidebarProvider>
+          <ToasterProvider>
+            <Routes>
+              <Route path="/*" element={<AppContent />} />
+            </Routes>
+          </ToasterProvider>
+        </SidebarProvider>
+      </NetworkProvider>
+    </BrowserRouter>
   );
 }
 

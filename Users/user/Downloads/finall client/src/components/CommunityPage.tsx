@@ -99,7 +99,7 @@ export function CommunityPage() {
           <p className="text-text-secondary text-[15px] mt-1">Connect with fellow ReadyPips traders, share insights, and grow together.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
+          <Button className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
             <Plus className="w-4 h-4 mr-1.5" /> New Discussion
           </Button>
         </div>
@@ -140,7 +140,7 @@ export function CommunityPage() {
                 </Avatar>
                 <Input placeholder="Start a discussion..." value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-button border-border bg-bg flex-1 h-9 text-[13px]" />
                 <Button size="icon" variant="ghost" className="rounded-button text-text-muted hover:text-primary hover:bg-primary/5 h-9 w-9"><Image className="w-4 h-4" /></Button>
-                <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150"><Send className="w-4 h-4" /></Button>
+                <Button className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150"><Send className="w-4 h-4" /></Button>
               </div>
             </CardContent>
           </Card>
@@ -247,7 +247,7 @@ export function CommunityPage() {
                       <p className="text-[13px] text-text-muted">Entry Fee</p>
                       <p className="text-lg font-semibold text-text-primary">$42.99</p>
                     </div>
-                    <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-5 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
+                    <Button className="btn-gradient-animated rounded-button h-9 px-5 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
                       Join Challenge <ArrowRight className="w-4 h-4 ml-1.5" />
                     </Button>
                   </div>

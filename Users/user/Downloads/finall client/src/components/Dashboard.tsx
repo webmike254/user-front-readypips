@@ -19,7 +19,7 @@ import {
   useLiveQuotes,
 } from "@/hooks/useMarketData";
 import { MiniChart, SimpleBarChart, type ChartDataPoint } from "@/components/Charts";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 function Countdown() {
@@ -412,12 +412,12 @@ const announcements = [
 ];
 
 export function Dashboard() {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const streak = [true, true, true, true, true, false, false];
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const handleNavigate = (page: string) => {
-    setCurrentPage(page);
+    navigate(`/${page}`);
   };
 
   return (
@@ -429,7 +429,7 @@ export function Dashboard() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-8 rounded-full bg-primary" />
-                  <h1 className="text-[40px] font-bold text-text-primary leading-tight">Welcome back, Ahmed</h1>
+                  <h1 className="text-[40px] font-bold text-text-primary leading-tight">Welcome back, Mike</h1>
                 </div>
                 <p className="text-text-secondary text-[15px]">Keep learning, keep growing, and become a consistent trader.</p>
                 <div className="pt-2">
@@ -437,7 +437,7 @@ export function Dashboard() {
                   <Countdown />
                 </div>
                 <Button
-                  className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-5 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"
+                  className="btn-gradient-animated rounded-button h-9 px-5 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"
                   onClick={() => handleNavigate("live")}
                 >
                   Join Live Class
@@ -541,7 +541,7 @@ export function Dashboard() {
                   </div>
                   <Progress value={c.progress} className="h-1.5" />
                 </div>
-                <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-8 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">Continue</Button>
+                <Button className="btn-gradient-animated rounded-button h-8 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">Continue</Button>
               </motion.div>
             ))}
           </CardContent>
@@ -584,27 +584,6 @@ export function Dashboard() {
 
       <div className="w-full xl:w-80 space-y-6">
         <Card className="rounded-[18px] border-border shadow-card hover:shadow-card-hover transition-shadow duration-200">
-          <CardHeader><CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> October 2023</CardTitle></CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-7 gap-1.5 text-center text-[13px] mb-3">
-              {["S", "M", "T", "W", "T", "F", "S"].map((d) => <span key={d} className="text-text-muted font-medium">{d}</span>)}
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <div key={d} className={`aspect-square rounded flex items-center justify-center text-[13px] ${d === 22 ? "bg-primary text-white font-semibold" : [5, 12, 19, 26].includes(d) ? "text-text-primary font-medium relative after:content-[''] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-primary" : "text-text-secondary hover:bg-primary/5"}`}>{d}</div>)}
-            </div>
-            <div className="space-y-2 pt-3 border-t border-border">
-              {[{ title: "Live Trading Session", time: "2:00 PM" }, { title: "Q&A with Mentors", time: "5:00 PM" }].map((e) => (
-                <div key={e.title} className="flex items-center gap-2.5 p-2 rounded-button hover:bg-primary/5 transition-colors duration-150 cursor-pointer">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <div className="flex-1">
-                    <p className="text-[13px] font-medium text-text-primary">{e.title}</p>
-                    <p className="text-[11px] text-text-muted">{e.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[18px] border-border shadow-card hover:shadow-card-hover transition-shadow duration-200">
           <CardHeader><CardTitle className="text-base font-semibold text-text-primary">Course Progress</CardTitle></CardHeader>
           <CardContent className="flex flex-col items-center">
             <Circle value={58} size={120} stroke={8} />
@@ -629,7 +608,7 @@ export function Dashboard() {
           <CardContent className="p-4">
             <h4 className="font-medium text-text-primary text-[15px] mb-0.5">Live Market Analysis</h4>
             <p className="text-[13px] text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" /> Today, 2:00 PM</p>
-            <Button className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-9 mt-3 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">Join Now</Button>
+            <Button className="w-full btn-gradient-animated rounded-button h-9 mt-3 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">Join Now</Button>
           </CardContent>
         </Card>
 

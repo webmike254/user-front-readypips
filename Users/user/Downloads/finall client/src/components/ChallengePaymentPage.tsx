@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 type PaymentMethod = "mpesa" | "card" | "crypto";
@@ -46,7 +46,7 @@ const CRYPTO_WALLETS: Record<CryptoCoin, { address: string; network: string }> =
 };
 
 export function ChallengePaymentPage() {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const [method, setMethod] = useState<PaymentMethod | null>(null);
   const [status, setStatus] = useState<PaymentStatus>("idle");
   const [cryptoCoin, setCryptoCoin] = useState<CryptoCoin>("USDT");
@@ -88,7 +88,7 @@ export function ChallengePaymentPage() {
   };
 
   if (status === "success") {
-    return <PaymentSuccess onGoDashboard={() => setCurrentPage("dashboard")} total={total} method={method} />;
+    return <PaymentSuccess onGoDashboard={() => navigate("/dashboard")} total={total} method={method} />;
   }
 
   if (status === "failed") {
@@ -99,7 +99,7 @@ export function ChallengePaymentPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-        <button onClick={() => setCurrentPage("dashboard")} className="hover:text-primary transition-colors">Dashboard</button>
+        <button onClick={() => navigate("/dashboard")} className="hover:text-primary transition-colors">Dashboard</button>
         <ChevronRight className="w-3.5 h-3.5" />
         <span className="text-text-secondary">Challenges</span>
         <ChevronRight className="w-3.5 h-3.5" />

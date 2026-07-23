@@ -81,7 +81,7 @@ export function DownloadsPage() {
           <h1 className="text-[40px] font-bold text-text-primary">Downloads</h1>
           <p className="text-text-secondary text-[15px] mt-1">Access your course materials, tools, and trading resources.</p>
         </div>
-        <Button onClick={handleDownloadClick} className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All</Button>
+        <Button onClick={handleDownloadClick} className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All</Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -108,7 +108,7 @@ export function DownloadsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary text-[13px] h-8"><Eye className="w-3.5 h-3.5 mr-1" /> Preview</Button>
-                  <Button onClick={handleDownloadClick} size="sm" className="bg-primary hover:bg-primary-hover text-white rounded-button text-[13px] h-8 font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
+                  <Button onClick={handleDownloadClick} size="sm" className="btn-gradient-animated rounded-button text-[13px] h-8 font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
                 </div>
               </div>
             </CardContent>
@@ -150,7 +150,7 @@ export function DownloadsPage() {
                           <span>·</span>
                           <span>{item.size}</span>
                         </div>
-                        <Button onClick={handleDownloadClick} className="bg-primary hover:bg-primary-hover text-white rounded-button h-8 px-3 text-[13px] font-medium shrink-0 transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
+                        <Button onClick={handleDownloadClick} className="btn-gradient-animated rounded-button h-8 px-3 text-[13px] font-medium shrink-0 transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -202,7 +202,7 @@ export function DownloadsPage() {
                 <div className="w-9 h-9 rounded-button bg-primary/8 flex items-center justify-center"><Package className="w-4 h-4 text-primary" /></div>
                 <div><p className="font-medium text-[13px] text-text-primary">Bulk Download</p><p className="text-[11px] text-text-muted">Get all files at once</p></div>
               </div>
-              <Button onClick={handleDownloadClick} className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All (1.8 GB)</Button>
+              <Button onClick={handleDownloadClick} className="w-full btn-gradient-animated rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All (1.8 GB)</Button>
             </CardContent>
           </Card>
         </div>

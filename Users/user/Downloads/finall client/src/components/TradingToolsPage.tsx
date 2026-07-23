@@ -616,7 +616,7 @@ export function TradingToolsPage() {
                 <p className="text-[13px] font-medium text-text-primary">Default Risk</p>
                 <p className="text-[11px] text-text-muted">1% per trade</p>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
+              <Button className="w-full btn-gradient-animated rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px">
                 <RefreshCcw className="w-4 h-4 mr-1.5" /> Reset Defaults
               </Button>
             </CardContent>

@@ -51,4 +51,22 @@
     width: 0 !important;
     height: 0 !important;
   }
+
+  .btn-gradient-animated {
+    background: linear-gradient(90deg, #5B3DF5, #8B5CF6, #A78BFA, #7C3AED, #5B3DF5);
+    background-size: 400% 100%;
+    animation: gradient-flow 4s ease infinite;
+    color: white !important;
+    border: none !important;
+  }
+
+  .btn-gradient-animated:hover {
+    filter: brightness(1.08);
+  }
+
+  @keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 }

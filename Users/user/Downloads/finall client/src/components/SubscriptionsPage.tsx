@@ -448,7 +448,7 @@ export function SubscriptionsPage() {
               <div className="flex items-center gap-3 mt-6 pt-6 border-t border-[#ECECEC]">
                 <Button variant="outline" className="rounded-xl border-[#ECECEC]">Manage</Button>
                 <Button variant="outline" className="rounded-xl border-[#ECECEC]">Renew</Button>
-                <Button className="bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-xl">Upgrade</Button>
+                <Button className="btn-gradient-animated rounded-xl">Upgrade</Button>
               </div>
             </CardContent>
           </Card>
@@ -601,7 +601,7 @@ export function SubscriptionsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3 mt-6 pt-6 border-t border-[#ECECEC]">
-                <Button className="bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-xl">Open Challenge Dashboard</Button>
+                <Button className="btn-gradient-animated rounded-xl">Open Challenge Dashboard</Button>
                 <Button variant="outline" className="rounded-xl border-[#ECECEC]">View Leaderboard</Button>
               </div>
             </CardContent>
@@ -705,7 +705,7 @@ export function SubscriptionsPage() {
                   <div className="p-8 rounded-2xl bg-[#F8F9FC] text-center">
                     <CreditCard className="w-12 h-12 text-[#6B7280] mx-auto mb-3" />
                     <p className="text-[#6B7280]">Visa, Mastercard, Debit & Credit cards accepted.</p>
-                    <Button className="mt-4 bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-xl">Pay with Card</Button>
+                    <Button className="mt-4 btn-gradient-animated rounded-xl">Pay with Card</Button>
                   </div>
                 </TabsContent>
 
@@ -826,7 +826,7 @@ export function SubscriptionsPage() {
                     <span>Withdrawal Fee</span>
                     <span className="font-medium text-[#111827]">$25.00 USD</span>
                   </div>
-                  <Button className="w-full bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-xl">
+                  <Button className="w-full btn-gradient-animated rounded-xl">
                     Request Withdrawal
                   </Button>
                 </div>
@@ -921,7 +921,7 @@ export function SubscriptionsPage() {
                 </div>
                 <Progress value={40} className="h-2 bg-[#ECECEC]" />
               </div>
-              <Button className="w-full bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-xl">Manage Plan</Button>
+              <Button className="w-full btn-gradient-animated rounded-xl">Manage Plan</Button>
             </CardContent>
           </Card>
 

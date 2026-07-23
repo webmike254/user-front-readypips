@@ -208,7 +208,7 @@ export function TradingViewPage() {
           <Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary text-[13px] h-9" onClick={() => { setSymbol("AAPL"); setSearchQuery(""); }}>
             <RefreshCw className="w-4 h-4 mr-1.5" /> Refresh
           </Button>
-          <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px" onClick={addToWatchlist}>
+          <Button className="btn-gradient-animated rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px" onClick={addToWatchlist}>
             <Star className="w-4 h-4 mr-1.5" /> Add to Watchlist
           </Button>
         </div>

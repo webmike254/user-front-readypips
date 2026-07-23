@@ -33,7 +33,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 type QuestionType = "single" | "multiple" | "truefalse" | "scenario";
@@ -245,7 +245,7 @@ function formatTime(seconds: number): string {
 }
 
 export function LessonQuizPage() {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [skipped, setSkipped] = useState<Set<string>>(new Set());
@@ -403,8 +403,8 @@ export function LessonQuizPage() {
       answers={answers}
       onRetry={retryQuiz}
       onReview={() => setShowExplanations(true)}
-      onNextLesson={() => setCurrentPage("courses")}
-      onGoDashboard={() => setCurrentPage("dashboard")}
+    onNextLesson={() => navigate("/courses")}
+    onGoDashboard={() => navigate("/dashboard")}
       topicStats={topicStats}
     />;
   }

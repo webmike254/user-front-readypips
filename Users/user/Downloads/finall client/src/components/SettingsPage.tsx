@@ -124,7 +124,7 @@ export function SettingsPage() {
                   <div className="space-y-1.5"><Label className="text-[13px] text-text-primary">Date of Birth</Label><Input type="date" defaultValue="1995-06-15" className="rounded-button border-border h-9 text-[13px]" /></div>
                 </div>
                 <div className="space-y-1.5"><Label className="text-[13px] text-text-primary">Bio</Label><Input defaultValue="Forex trader | Price action enthusiast | ReadyPips Premium" className="rounded-button border-border h-9 text-[13px]" /></div>
-                <div className="flex items-center gap-2 pt-2"><Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Save className="w-4 h-4 mr-1.5" /> Save Changes</Button><Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 text-[13px] h-9">Cancel</Button></div>
+                <div className="flex items-center gap-2 pt-2"><Button className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Save className="w-4 h-4 mr-1.5" /> Save Changes</Button><Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 text-[13px] h-9">Cancel</Button></div>
               </CardContent>
             </Card>
             <Card className="rounded-[18px] border-border shadow-card">
@@ -156,7 +156,7 @@ export function SettingsPage() {
                     <div key={r.label} className="flex items-center gap-1.5 text-[12px]">{r.met ? <CheckCircle2 className="w-3 h-3 text-success" /> : <AlertCircle className="w-3 h-3 text-text-muted" />}<span className={r.met ? "text-success" : "text-text-muted"}>{r.label}</span></div>
                   ))}
                 </div>
-                <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Key className="w-4 h-4 mr-1.5" /> Update Password</Button>
+                <Button className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Key className="w-4 h-4 mr-1.5" /> Update Password</Button>
               </CardContent>
             </Card>
             <Card className="rounded-[18px] border-border shadow-card">
@@ -287,7 +287,7 @@ export function SettingsPage() {
                   <div className="space-y-1.5"><Label className="text-[13px]">Timezone</Label><Input defaultValue="Africa/Nairobi (GMT+3)" className="rounded-button border-border h-9 text-[13px]" /></div>
                   <div className="space-y-1.5"><Label className="text-[13px]">Currency Display</Label><Input defaultValue="USD ($)" className="rounded-button border-border h-9 text-[13px]" /></div>
                 </div>
-                <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium mt-4 transition-all duration-150 hover:-translate-y-px"><Save className="w-4 h-4 mr-1.5" /> Save Preferences</Button>
+                <Button className="btn-gradient-animated rounded-button h-9 px-4 text-[13px] font-medium mt-4 transition-all duration-150 hover:-translate-y-px"><Save className="w-4 h-4 mr-1.5" /> Save Preferences</Button>
               </CardContent>
             </Card>
           </div>

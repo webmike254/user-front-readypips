@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const COMPETITIONS = [
@@ -37,7 +37,7 @@ const COMPETITIONS = [
     id: 1,
     title: "Beginner Challenge",
     tier: "Bronze",
-    entryFee: 5,
+    entryFee: 42.99,
     prizePool: 250,
     participants: 48,
     maxParticipants: 100,
@@ -45,7 +45,7 @@ const COMPETITIONS = [
     startDate: "Every Monday",
     profitTarget: "10%",
     maxLoss: "5%",
-    description: "Perfect for new traders. Start with a $1,000 virtual account and hit 10% profit.",
+    description: "Perfect for new traders. Start with a $8,598 virtual account and hit 10% profit.",
     color: "text-amber-600",
     bgColor: "bg-amber-50",
     borderColor: "border-amber-200",
@@ -55,7 +55,7 @@ const COMPETITIONS = [
     id: 2,
     title: "Intermediate Challenge",
     tier: "Silver",
-    entryFee: 15,
+    entryFee: 42.99,
     prizePool: 750,
     participants: 32,
     maxParticipants: 50,
@@ -63,7 +63,7 @@ const COMPETITIONS = [
     startDate: "Every Monday",
     profitTarget: "10%",
     maxLoss: "5%",
-    description: "Step up your game. $5,000 virtual account with stricter rules.",
+    description: "Step up your game. $8,598 virtual account with stricter rules.",
     color: "text-slate-500",
     bgColor: "bg-slate-50",
     borderColor: "border-slate-200",
@@ -73,7 +73,7 @@ const COMPETITIONS = [
     id: 3,
     title: "Advanced Challenge",
     tier: "Gold",
-    entryFee: 25,
+    entryFee: 42.99,
     prizePool: 1500,
     participants: 18,
     maxParticipants: 40,
@@ -81,7 +81,7 @@ const COMPETITIONS = [
     startDate: "1st of each month",
     profitTarget: "10%",
     maxLoss: "5%",
-    description: "For experienced traders. $10,000 virtual account with advanced requirements.",
+    description: "For experienced traders. $8,598 virtual account with advanced requirements.",
     color: "text-yellow-600",
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-200",
@@ -91,7 +91,7 @@ const COMPETITIONS = [
     id: 4,
     title: "Pro Challenge",
     tier: "Platinum",
-    entryFee: 50,
+    entryFee: 42.99,
     prizePool: 4000,
     participants: 12,
     maxParticipants: 30,
@@ -99,7 +99,7 @@ const COMPETITIONS = [
     startDate: "1st of each month",
     profitTarget: "10%",
     maxLoss: "5%",
-    description: "Elite competition for top traders. $25,000 virtual account.",
+    description: "Elite competition for top traders. $8,598 virtual account.",
     color: "text-indigo-600",
     bgColor: "bg-indigo-50",
     borderColor: "border-indigo-200",
@@ -109,7 +109,7 @@ const COMPETITIONS = [
     id: 5,
     title: "Grand Championship",
     tier: "Diamond",
-    entryFee: 75,
+    entryFee: 42.99,
     prizePool: 7500,
     participants: 8,
     maxParticipants: 20,
@@ -117,7 +117,7 @@ const COMPETITIONS = [
     startDate: "1st of each month",
     profitTarget: "15%",
     maxLoss: "4%",
-    description: "The ultimate test. $50,000 virtual account. Top 3 split the prize pool.",
+    description: "The ultimate test. $8,598 virtual account. Top 3 split the prize pool.",
     color: "text-cyan-600",
     bgColor: "bg-cyan-50",
     borderColor: "border-cyan-200",
@@ -153,7 +153,7 @@ const MY_STATS = [
 ];
 
 export function CompetitionPage() {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const [selectedComp, setSelectedComp] = useState<number | null>(null);
   const [joined, setJoined] = useState<number[]>([]);
 
@@ -278,7 +278,7 @@ export function CompetitionPage() {
                           "w-full rounded-[12px] h-10 text-[13px] font-semibold transition-all",
                           isJoined
                             ? "bg-success/10 text-success hover:bg-success/10"
-                            : "bg-primary hover:bg-primary-hover text-white"
+                            : "btn-gradient-animated"
                         )}
                       >
                         {isJoined ? (

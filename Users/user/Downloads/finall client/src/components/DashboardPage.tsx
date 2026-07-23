@@ -169,7 +169,7 @@ export function DashboardPage() {
                     <span className="text-sm font-semibold text-[#5B3DF5]">{course.progress}%</span>
                   </div>
                   <Progress value={course.progress} className="h-2 mb-3" />
-                  <Button size="sm" className="bg-[#5B3DF5] hover:bg-[#4c32d4] text-white rounded-lg h-9">
+                  <Button size="sm" className="btn-gradient-animated rounded-lg h-9">
                     <Play className="w-3.5 h-3.5 mr-1.5" /> Continue
                   </Button>
                 </div>

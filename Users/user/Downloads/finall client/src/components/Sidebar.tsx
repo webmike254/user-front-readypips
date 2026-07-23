@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,13 @@ const navItems = [
 export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
   const { mobileOpen, setMobileOpen, collapsed, toggleCollapsed } = useSidebar();
   const prefersReduced = useReducedMotion();
+  const navigate = useNavigate();
+
+  const handleNavigate = (key: string) => {
+    setCurrentPage(key);
+    navigate(`/${key}`);
+    setMobileOpen(false);
+  };
 
   useEffect(() => {
     if (mobileOpen) {
@@ -77,7 +85,7 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
         key={item.key}
         whileHover={prefersReduced ? {} : { x: 2 }}
         whileTap={prefersReduced ? {} : { scale: 0.98 }}
-        onClick={() => { setCurrentPage(item.key); onClick?.(); }}
+        onClick={() => { handleNavigate(item.key); onClick?.(); }}
         className={cn(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-colors duration-150 relative group min-h-[44px]",
           active
@@ -114,10 +122,10 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
   const SidebarContent = () => (
     <div className={cn("flex flex-col h-full", collapsed ? "px-2 py-4 items-center" : "px-3 py-4")}>
       {/* Logo */}
-      <div className={cn("flex items-center mb-5 pt-2", collapsed && "justify-center mb-4 pt-2")}>
+      <div className={cn("flex items-center justify-center mb-4 pt-2", collapsed && "mb-4 pt-2")}>
         <div className={cn(
-          "rounded-[16px] flex items-center justify-center overflow-hidden transition-all duration-300",
-          collapsed ? "w-11 h-11" : "w-[72px] h-[72px]"
+          "flex items-center justify-center overflow-hidden transition-all duration-300",
+          collapsed ? "w-16 h-16" : "w-36 h-36"
         )}>
           <img
             src="https://i.postimg.cc/sX5XGLk8/Ready-pips-black-ligo-removebg-preview-(2).png"
@@ -126,6 +134,37 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
             loading="eager"
           />
         </div>
+      </div>
+
+      {/* Profile */}
+      <div className={cn("flex flex-col items-center mb-4 pb-4 border-b border-border", collapsed ? "mb-3 pb-3" : "")}>
+        <div className={cn("relative overflow-hidden shrink-0 transition-all mb-2", collapsed ? "w-12 h-12 rounded-xl" : "w-20 h-20 rounded-2xl")}>
+          <img
+            src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mike&backgroundColor=b6e3f4&scale=90"
+            alt="Mike Muchemi"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+        </div>
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-center overflow-hidden"
+            >
+              <h3 className="font-medium text-sm text-text-primary">Mike Muchemi</h3>
+              <div className="flex items-center justify-center gap-1 mt-1">
+                <Badge className="bg-primary/8 text-primary hover:bg-primary/8 rounded text-[10px] font-medium border-0">
+                  Premium
+                </Badge>
+                <CheckCircle2 className="w-3 h-3 text-primary" aria-hidden="true" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Collapse toggle */}
@@ -146,33 +185,6 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
             </>
           )}
         </button>
-      </div>
-
-      {/* Profile */}
-      <div className={cn("flex flex-col items-center mb-4 pb-4 border-b border-border", collapsed ? "mb-3 pb-3" : "")}>
-        <Avatar className={cn("mb-2 transition-all", collapsed ? "w-9 h-9" : "w-11 h-11")}>
-          <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" alt="Ahmed Bader" />
-          <AvatarFallback className="bg-primary text-white text-sm">AB</AvatarFallback>
-        </Avatar>
-        <AnimatePresence>
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-center overflow-hidden"
-            >
-              <h3 className="font-medium text-sm text-text-primary">Ahmed Bader</h3>
-              <div className="flex items-center justify-center gap-1 mt-1">
-                <Badge className="bg-primary/8 text-primary hover:bg-primary/8 rounded text-[10px] font-medium border-0">
-                  Premium
-                </Badge>
-                <CheckCircle2 className="w-3 h-3 text-primary" aria-hidden="true" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Navigation */}

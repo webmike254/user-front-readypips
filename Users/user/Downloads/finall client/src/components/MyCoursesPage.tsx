@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -363,7 +363,7 @@ function SkeletonCard() {
 /* ------------------------------------------------------------------ */
 
 function CourseCard({ course, index }: { course: Course; index: number }) {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const prefersReduced = useReducedMotion();
   const Icon = course.icon;
 
@@ -495,10 +495,10 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
 
           {/* Action Button */}
           <Button
-            onClick={() => setCurrentPage("quiz")}
+            onClick={() => navigate("/quiz")}
             className={cn(
               "w-full h-14 rounded-[16px] text-[17px] font-semibold transition-all duration-200 mt-auto min-h-[56px]",
-              "bg-[#5B3DF5] hover:bg-[#4A32D4] text-white hover:translate-y-[-2px]",
+              "btn-gradient-animated hover:translate-y-[-2px]",
               "focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40 focus-visible:ring-offset-2"
             )}
             aria-label={btnConfig.text}
@@ -523,7 +523,7 @@ export function MyCoursesPage() {
   const [showCompleted, setShowCompleted] = useState(true);
   const [loading, setLoading] = useState(true);
   const prefersReduced = useReducedMotion();
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 800);
@@ -546,7 +546,7 @@ export function MyCoursesPage() {
   const animDuration = prefersReduced ? 0 : 0.4;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-8">
+    <div className="w-full mx-auto space-y-8 pb-8">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: animY }}
@@ -564,22 +564,14 @@ export function MyCoursesPage() {
           <Button
             variant="outline"
             className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
-            onClick={() => setCurrentPage("certificates")}
+            onClick={() => navigate("/certificates")}
             aria-label="View certificates"
           >
             <Award className="w-4 h-4 mr-1.5" aria-hidden="true" /> Certificates
           </Button>
           <Button
-            variant="outline"
-            className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
-            onClick={() => setCurrentPage("downloads")}
-            aria-label="View resources"
-          >
-            <FileText className="w-4 h-4 mr-1.5" aria-hidden="true" /> Resources
-          </Button>
-          <Button
-            className="rounded-[14px] h-10 px-5 text-[13px] bg-[#5B3DF5] hover:bg-[#4A32D4] text-white transition-all hover:translate-y-[-2px] focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
-            onClick={() => setCurrentPage("quiz")}
+            className="rounded-[14px] h-10 px-5 text-[13px] btn-gradient-animated text-white transition-all hover:translate-y-[-2px] focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
+            onClick={() => navigate("/quiz")}
             aria-label="Take a quiz"
           >
             <PlayCircle className="w-4 h-4 mr-1.5" aria-hidden="true" /> Take Quiz
@@ -687,7 +679,7 @@ export function MyCoursesPage() {
               View all
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {inProgress.slice(0, 4).map((course, i) => (
               <CourseCard key={course.id} course={course} index={i} />
             ))}
@@ -710,7 +702,7 @@ export function MyCoursesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
               aria-label="Loading courses"
             >
               {Array.from({ length: 8 }).map((_, i) => (
@@ -735,7 +727,7 @@ export function MyCoursesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
             >
               {filtered.map((course, i) => (
                 <CourseCard key={course.id} course={course} index={i} />

@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { usePageNavigation } from "@/components/PageContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<string, string> = {
@@ -135,7 +135,7 @@ function CountdownTimer() {
 }
 
 export function LiveClassesPage() {
-  const { setCurrentPage } = usePageNavigation();
+  const navigate = useNavigate();
   const [reminders, setReminders] = useState({ email: true, browser: true, whatsapp: true });
   const [search, setSearch] = useState("");
 
@@ -148,7 +148,7 @@ export function LiveClassesPage() {
           <p className="text-[14px] text-text-secondary mt-1">Join live trading sessions, mentorship classes, and watch recordings.</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-[12px] h-9 px-4 text-[13px] border-border" onClick={() => setCurrentPage("downloads")}>
+          <Button variant="outline" className="rounded-[12px] h-9 px-4 text-[13px] border-border" onClick={() => navigate("/downloads")}>
             <CalendarIcon className="w-4 h-4 mr-1.5" /> Full Schedule
           </Button>
           <Button className="rounded-[12px] h-9 px-4 text-[13px] bg-primary hover:bg-primary-hover">
@@ -193,7 +193,7 @@ export function LiveClassesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button className="bg-primary hover:bg-primary-hover text-white rounded-[12px] h-10 px-5 text-[13px] font-medium">
+                <Button className="btn-gradient-animated rounded-[12px] h-10 px-5 text-[13px] font-medium">
                   <Video className="w-4 h-4 mr-1.5" /> Join Live Class
                 </Button>
                 <Button variant="outline" className="rounded-[12px] h-10 px-4 text-[13px] border-border">
@@ -263,7 +263,7 @@ export function LiveClassesPage() {
               >
                 <Card className="rounded-[16px] border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow">
                   <div className="flex flex-col lg:flex-row gap-5 p-5">
-                    <div className="w-full lg:w-48 h-32 rounded-[12px] overflow-hidden shrink-0 relative">
+                    <div className="w-full lg:w-40 h-24 rounded-[10px] overflow-hidden shrink-0 relative">
                       <img src={cls.thumbnail} alt={cls.title} className="w-full h-full object-cover" />
                       <div className="absolute top-2 left-2">
                         <Badge className={cn("border-0 rounded-full px-2 py-1 text-[10px] font-semibold", statusStyles[cls.status])}>
@@ -298,7 +298,7 @@ export function LiveClassesPage() {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button className="bg-primary hover:bg-primary-hover text-white rounded-[10px] h-9 px-4 text-[13px] font-medium">
+                        <Button className="btn-gradient-animated rounded-[10px] h-9 px-4 text-[13px] font-medium">
                           <Video className="w-4 h-4 mr-1.5" /> {cls.status === "Live" ? "Join Now" : "Register"}
                         </Button>
                         <Button variant="outline" className="rounded-[10px] h-9 px-4 text-[13px] border-border">
@@ -344,7 +344,7 @@ export function LiveClassesPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge className={cn("border-0 rounded-full px-2 py-0.5 text-[10px]", statusStyles[s.status])}>{s.status}</Badge>
-                      <Button size="sm" className="rounded-[8px] h-8 bg-primary hover:bg-primary-hover text-white text-[12px]">
+                      <Button size="sm" className="rounded-[8px] h-8 btn-gradient-animated text-[12px]">
                         Join
                       </Button>
                     </div>
@@ -391,7 +391,7 @@ export function LiveClassesPage() {
                 whileHover={{ y: -3 }}
               >
                 <Card className="rounded-[16px] border-border shadow-card overflow-hidden cursor-pointer hover:shadow-card-hover transition-shadow">
-                  <div className="h-36 relative group">
+                  <div className="h-24 relative group">
                     <img src={rec.thumbnail} alt={rec.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
@@ -409,7 +409,7 @@ export function LiveClassesPage() {
                     <h3 className="font-semibold text-[14px] text-text-primary mb-1">{rec.title}</h3>
                     <p className="text-[11px] text-text-muted mb-3">{rec.date} · {rec.instructor}</p>
                     <div className="flex gap-2">
-                      <Button size="sm" className="rounded-[8px] h-8 bg-primary hover:bg-primary-hover text-white text-[12px] flex-1">
+                      <Button size="sm" className="rounded-[8px] h-8 btn-gradient-animated text-[12px] flex-1">
                         <Play className="w-3.5 h-3.5 mr-1" /> Watch
                       </Button>
                       <Button size="sm" variant="outline" className="rounded-[8px] h-8 text-[12px] border-border">
