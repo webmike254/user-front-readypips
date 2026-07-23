@@ -1,700 +1,807 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
-  Maximize2,
-  Camera,
   Star,
-  Plus,
-  ExternalLink,
-  Save,
-  Share2,
   TrendingUp,
-  MousePointer2,
-  Square,
-  Ruler,
+  TrendingDown,
   BarChart3,
-  Type,
-  ArrowRight,
-  Activity,
-  Eraser,
   Layers,
-  LineChart,
-  AreaChart,
-  CandlestickChart,
-  Settings2,
-  Clock,
-  Globe,
-  Zap,
-  BookOpen,
-  Download,
   ChevronRight,
+  RefreshCw,
+  AlertCircle,
+  ArrowUpRight,
+  ArrowDownRight,
+  X,
+  Building2,
+  DollarSign,
+  Percent,
+  Activity,
+  Globe,
+  Calendar,
+  BookOpen,
+  LineChart as LineChartIcon,
+  CandlestickChart,
+  Hash,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
-  ComposedChart,
-  Area,
-  Line,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+  useStockQuote,
+  useHistoricalPrices,
+  useStockSearch,
+  useCompanyProfile,
+  useEconomicCalendar,
+  useLSEMarketOverview,
+  useIncomeStatement,
+  useBalanceSheet,
+  useCashFlow,
+  useLiveQuotes,
+  useNews,
+} from "@/hooks/useMarketData";
+import { useToast } from "@/components/ToasterProvider";
+import { ChartSkeleton, StatSkeleton, ListItemSkeleton, CardSkeleton } from "@/components/Skeletons";
+import { CandlestickChart as CandleChartComponent, PriceAreaChart, MultiLineChart, type ChartDataPoint } from "@/components/Charts";
+import type { StockSearchResult, StockQuote, HistoricalPrice, CompanyProfile, EconomicEvent, IncomeStatement, BalanceSheet, CashFlow, NewsItem } from "@/api/fmp";
 
-const markets = ["Forex", "Crypto", "Gold", "Indices", "Stocks", "Commodities", "Favorites"];
-const timeframes = ["1m", "5m", "15m", "30m", "1H", "4H", "D", "W", "M"];
+const timeframes = ["1D", "5D", "1M", "3M", "6M", "1Y", "YTD"];
 
-const popularPairs = [
-  { pair: "EUR/USD", price: "1.0845", change: "+0.12%", bullish: true, spark: [1.08, 1.082, 1.081, 1.083, 1.0845] },
-  { pair: "GBP/USD", price: "1.2678", change: "-0.05%", bullish: false, spark: [1.27, 1.269, 1.268, 1.267, 1.2678] },
-  { pair: "USD/JPY", price: "151.42", change: "+0.23%", bullish: true, spark: [151, 151.1, 151.2, 151.3, 151.42] },
-  { pair: "AUD/USD", price: "0.6543", change: "+0.08%", bullish: true, spark: [0.65, 0.651, 0.652, 0.653, 0.6543] },
-  { pair: "USD/CAD", price: "1.3567", change: "-0.11%", bullish: false, spark: [1.36, 1.358, 1.357, 1.356, 1.3567] },
-  { pair: "XAU/USD", price: "2,385.60", change: "+0.45%", bullish: true, spark: [2370, 2375, 2380, 2382, 2385.6] },
-  { pair: "BTC/USD", price: "67,420", change: "+1.20%", bullish: true, spark: [66000, 66500, 66800, 67000, 67420] },
-  { pair: "ETH/USD", price: "3,245", change: "+0.85%", bullish: true, spark: [3200, 3220, 3230, 3240, 3245] },
-];
-
-const watchlist = [
-  { pair: "EUR/USD", price: "1.0845", change: "+0.12%", open: true },
-  { pair: "GBP/USD", price: "1.2678", change: "-0.05%", open: true },
-  { pair: "USD/JPY", price: "151.42", change: "+0.23%", open: true },
-  { pair: "XAU/USD", price: "2,385.60", change: "+0.45%", open: true },
-  { pair: "BTC/USD", price: "67,420", change: "+1.20%", open: true },
-  { pair: "NAS100", price: "18,245", change: "+0.34%", open: false },
-];
-
-const tradeIdeas = [
-  {
-    title: "EUR/USD Bullish Continuation",
-    pair: "EUR/USD",
-    direction: "Buy",
-    entry: "1.0820 - 1.0835",
-    stop: "1.0780",
-    take: "1.0920",
-    rr: "1:2.5",
-    instructor: "Mark Thompson",
-    date: "Today, 09:30 AM",
-    image: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=400&h=250&fit=crop",
-  },
-];
-
-const sessions = [
-  { name: "Sydney", open: false, time: "Closed", pairs: "AUD/NZD, AUD/JPY" },
-  { name: "Tokyo", open: false, time: "Closed", pairs: "USD/JPY, GBP/JPY" },
-  { name: "London", open: true, time: "Open - 4h 12m left", pairs: "EUR/USD, GBP/USD" },
-  { name: "New York", open: false, time: "Opens in 2h 30m", pairs: "US30, NAS100" },
-];
-
-const economicEvents = [
-  { time: "08:30", currency: "USD", impact: "High", event: "Non-Farm Payrolls", forecast: "185K", previous: "175K", actual: "-" },
-  { time: "10:00", currency: "EUR", impact: "Medium", event: "ECB Press Conference", forecast: "-", previous: "-", actual: "-" },
-  { time: "14:00", currency: "USD", impact: "Low", event: "Factory Orders", forecast: "0.5%", previous: "0.3%", actual: "-" },
-];
-
-const news = [
-  { headline: "Fed signals potential rate cuts in Q3", time: "2h ago", category: "Central Banks" },
-  { headline: "Gold breaks above $2,400 resistance", time: "4h ago", category: "Commodities" },
-  { headline: "Bitcoin ETF inflows hit weekly high", time: "5h ago", category: "Crypto" },
-];
-
-const drawingTools = [
-  { icon: TrendingUp, label: "Trend" },
-  { icon: MousePointer2, label: "Horizontal" },
-  { icon: Square, label: "Rect" },
-  { icon: Ruler, label: "Fibo" },
-  { icon: BarChart3, label: "R/R" },
-  { icon: Type, label: "Text" },
-  { icon: ArrowRight, label: "Arrow" },
-  { icon: Activity, label: "Brush" },
-  { icon: Eraser, label: "Erase" },
-  { icon: Layers, label: "Measure" },
-];
-
-function CountUp({ end, suffix = "" }: { end: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    let start = 0;
-    const duration = 1200;
-    const step = end / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [end]);
-  return <span>{count}{suffix}</span>;
+function formatPrice(price: number) {
+  if (price >= 10000) return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (price >= 1000) return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (price >= 1) return price.toFixed(2);
+  return price.toFixed(4);
 }
 
-function generateChartData(symbol: string, points = 90) {
-  const basePrices: Record<string, number> = {
-    "FX:EURUSD": 1.084,
-    "FX:GBPUSD": 1.268,
-    "FX:USDJPY": 151.4,
-    "FX:AUDUSD": 0.654,
-    "FX:USDCAD": 1.357,
-    "TVC:GOLD": 2385,
-    "BINANCE:BTCUSDT": 67420,
-    "BINANCE:ETHUSDT": 3245,
-    "CME_MINI:NQ1!": 18245,
-    "CME_MINI:YM1!": 39200,
-  };
-  let price = basePrices[symbol] || 1.084;
-  const data = [];
-  for (let i = 0; i < points; i++) {
-    const change = (Math.random() - 0.48) * price * 0.0015;
-    price += change;
-    const high = price + Math.random() * price * 0.0008;
-    const low = price - Math.random() * price * 0.0008;
-    const open = price - (Math.random() - 0.5) * price * 0.0005;
-    const close = price + (Math.random() - 0.5) * price * 0.0005;
-    data.push({
-      time: `${9 + Math.floor(i / 12)}:${((i % 12) * 5).toString().padStart(2, "0")}`,
-      price,
-      open,
-      high,
-      low,
-      close,
-      volume: Math.floor(Math.random() * 2000) + 800,
-    });
+function formatCompact(num: number) {
+  if (num >= 1e12) return (num / 1e12).toFixed(1) + "T";
+  if (num >= 1e9) return (num / 1e9).toFixed(1) + "B";
+  if (num >= 1e6) return (num / 1e6).toFixed(1) + "M";
+  if (num >= 1e3) return (num / 1e3).toFixed(1) + "K";
+  return num.toString();
+}
+
+function getPeriodFromTf(tf: string) {
+  const now = new Date();
+  const from = new Date(now);
+  switch (tf) {
+    case "1D": from.setDate(now.getDate() - 1); break;
+    case "5D": from.setDate(now.getDate() - 5); break;
+    case "1M": from.setMonth(now.getMonth() - 1); break;
+    case "3M": from.setMonth(now.getMonth() - 3); break;
+    case "6M": from.setMonth(now.getMonth() - 6); break;
+    case "1Y": from.setFullYear(now.getFullYear() - 1); break;
+    case "YTD": from.setMonth(0); from.setDate(1); break;
+    default: from.setMonth(now.getMonth() - 1); break;
   }
-  return data;
+  return { from: from.toISOString().split("T")[0], to: now.toISOString().split("T")[0] };
 }
 
-function calculateSMA(data: any[], period: number, key: string) {
-  return data.map((item, index) => {
-    if (index < period - 1) return { ...item, sma: null };
-    const sum = data.slice(index - period + 1, index + 1).reduce((a, b) => a + b[key], 0);
-    return { ...item, sma: sum / period };
-  });
-}
+function FinancialsTable({ data, title, fields }: { data: any[] | null; title: string; fields: { key: string; label: string; format?: (v: number) => string }[] }) {
+  if (!data || data.length === 0) return null;
 
-function calculateEMA(data: any[], period: number, key: string) {
-  const k = 2 / (period + 1);
-  const result: any[] = [];
-  data.forEach((item, index) => {
-    if (index === 0) {
-      result.push({ ...item, ema: item[key] });
-    } else {
-      const prevEma = result[index - 1].ema;
-      const ema = item[key] * k + prevEma * (1 - k);
-      result.push({ ...item, ema });
-    }
-  });
-  return result;
-}
-
-function CustomTooltip({ active, payload, label }: any) {
-  if (!active || !payload || !payload.length) return null;
-  const item = payload[0].payload;
   return (
-    <div className="bg-white border border-[#ECECEC] rounded-xl shadow-lg p-3 text-xs">
-      <p className="font-semibold text-[#111827] mb-1">{label}</p>
-      <div className="space-y-1">
-        <p className="text-[#5B3DF5]">Price: {item.price.toFixed(item.price > 1000 ? 2 : 5)}</p>
-        {item.sma && <p className="text-green-600">SMA 20: {item.sma.toFixed(item.price > 1000 ? 2 : 5)}</p>}
-        {item.ema && <p className="text-amber-500">EMA 12: {item.ema.toFixed(item.price > 1000 ? 2 : 5)}</p>}
-        <p className="text-[#6B7280]">Volume: {item.volume.toLocaleString()}</p>
-      </div>
-    </div>
+    <Card className="rounded-[18px] border-border shadow-card">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold text-text-primary flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-primary" /> {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-2 px-3 text-text-muted font-medium">Period</th>
+                {fields.map((f) => (
+                  <th key={f.key} className="text-right py-2 px-3 text-text-muted font-medium">{f.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.slice(0, 4).map((row, i) => (
+                <tr key={i} className="border-b border-border/50 hover:bg-bg transition-colors">
+                  <td className="py-2 px-3 text-text-primary font-medium">{row.date} ({row.period})</td>
+                  {fields.map((f) => (
+                    <td key={f.key} className="text-right py-2 px-3 text-text-secondary">
+                      {f.format ? f.format(row[f.key]) : row[f.key]?.toLocaleString() || "-"}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 export function TradingViewPage() {
-  const [activeMarket, setActiveMarket] = useState("Forex");
-  const [symbol, setSymbol] = useState("FX:EURUSD");
-  const [timeframe, setTimeframe] = useState("15m");
-  const [chartType, setChartType] = useState<"area" | "line">("area");
-  const [search, setSearch] = useState("");
-  const [showSMA, setShowSMA] = useState(true);
-  const [showEMA, setShowEMA] = useState(true);
-  const [showVolume, setShowVolume] = useState(true);
+  const [symbol, setSymbol] = useState("AAPL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [timeframe, setTimeframe] = useState("1M");
+  const [chartType, setChartType] = useState<"area" | "candle">("candle");
+  const [watchlist, setWatchlist] = useState<string[]>(["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN", "META", "NVDA", "AMD"]);
+  const [showIndicators, setShowIndicators] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const { add } = useToast();
 
-  const chartData = useMemo(() => {
-    const raw = generateChartData(symbol);
-    const withSMA = calculateSMA(raw, 20, "price");
-    return calculateEMA(withSMA, 12, "price");
-  }, [symbol]);
+  const { data: quoteData, loading: quoteLoading, error: quoteError } = useStockQuote(symbol);
+  const { from, to } = useMemo(() => getPeriodFromTf(timeframe), [timeframe]);
+  const { data: histData, loading: histLoading, error: histError } = useHistoricalPrices(symbol, from, to);
+  const { data: searchResults, loading: searchLoading } = useStockSearch(searchQuery);
+  const { data: profileData, loading: profileLoading } = useCompanyProfile(symbol);
+  const { data: marketOverview, loading: marketLoading } = useLSEMarketOverview();
+  const { data: ecoCalendar, loading: ecoLoading } = useEconomicCalendar();
+  const { data: incomeData, loading: incomeLoading } = useIncomeStatement(symbol, "annual");
+  const { data: balanceData, loading: balanceLoading } = useBalanceSheet(symbol, "annual");
+  const { data: cashFlowData, loading: cashFlowLoading } = useCashFlow(symbol, "annual");
+  const { data: liveQuotes } = useLiveQuotes(watchlist);
 
-  const currentPrice = chartData[chartData.length - 1]?.price || 0;
-  const prevPrice = chartData[chartData.length - 2]?.price || currentPrice;
+  const quote = quoteData?.[0];
+  const profile = profileData?.[0];
+
+  const chartData: ChartDataPoint[] = useMemo(() => {
+    if (!histData) return [];
+    return histData.map((d) => ({
+      date: d.date,
+      open: d.open,
+      high: d.high,
+      low: d.low,
+      close: d.close,
+      volume: d.volume,
+    }));
+  }, [histData]);
+
+  const currentPrice = quote?.price || 0;
+  const prevPrice = quote?.previousClose || currentPrice;
   const priceChange = currentPrice - prevPrice;
-  const priceChangePct = (priceChange / prevPrice) * 100;
+  const priceChangePct = prevPrice ? (priceChange / prevPrice) * 100 : 0;
+  const isBullish = priceChange >= 0;
 
-  const handlePairClick = (pair: string) => {
-    const mapping: Record<string, string> = {
-      "EUR/USD": "FX:EURUSD",
-      "GBP/USD": "FX:GBPUSD",
-      "USD/JPY": "FX:USDJPY",
-      "AUD/USD": "FX:AUDUSD",
-      "USD/CAD": "FX:USDCAD",
-      "XAU/USD": "TVC:GOLD",
-      "BTC/USD": "BINANCE:BTCUSDT",
-      "ETH/USD": "BINANCE:ETHUSDT",
-      "NAS100": "CME_MINI:NQ1!",
-      "US30": "CME_MINI:YM1!",
-    };
-    setSymbol(mapping[pair] || `FX:${pair.replace("/", "")}`);
-  };
+  const handleSelectSymbol = useCallback((s: string) => {
+    setSymbol(s);
+    setSearchQuery("");
+    setShowSearchResults(false);
+    add(`Selected ${s}`, "info");
+  }, [add]);
 
-  const formatPrice = (price: number) => {
-    if (price > 1000) return price.toFixed(2);
-    return price.toFixed(5);
-  };
+  const addToWatchlist = useCallback(() => {
+    if (!watchlist.includes(symbol)) {
+      setWatchlist((prev) => [symbol, ...prev].slice(0, 12));
+      add(`${symbol} added to watchlist`, "success");
+    }
+  }, [symbol, watchlist, add]);
+
+  const removeFromWatchlist = useCallback((s: string) => {
+    setWatchlist((prev) => prev.filter((x) => x !== s));
+  }, []);
+
+  const financialChartData = useMemo(() => {
+    if (!incomeData) return [];
+    return [...incomeData].reverse().slice(0, 5).map((d) => ({
+      date: d.date,
+      Revenue: d.revenue / 1e9,
+      "Gross Profit": d.grossProfit / 1e9,
+      "Net Income": d.netIncome / 1e9,
+      EBITDA: d.ebitda / 1e9,
+    }));
+  }, [incomeData]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-6 pb-8"
-    >
-      {/* Page Header */}
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="space-y-10 pb-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-[#111827]">TradingView</h1>
-          <p className="text-[#6B7280] mt-1 max-w-2xl">
-            Analyze the markets, follow expert trade ideas, practice chart analysis, and improve your trading decisions.
-          </p>
+          <h1 className="text-[40px] font-bold text-text-primary">TradingView</h1>
+          <p className="text-text-secondary text-[15px] mt-1">Real-time market data, analysis, and trading insights powered by FMP & LSE.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl border-[#ECECEC] text-[#111827] hover:bg-[#F3F0FF] hover:text-[#5B3DF5]">
-            <ExternalLink className="w-4 h-4 mr-2" /> Open Full TradingView
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary text-[13px] h-9" onClick={() => { setSymbol("AAPL"); setSearchQuery(""); }}>
+            <RefreshCw className="w-4 h-4 mr-1.5" /> Refresh
           </Button>
-          <Button variant="outline" className="rounded-xl border-[#ECECEC] text-[#111827] hover:bg-[#F3F0FF] hover:text-[#5B3DF5]">
-            <Save className="w-4 h-4 mr-2" /> Save Workspace
-          </Button>
-          <Button className="bg-gradient-to-r from-[#5B3DF5] to-[#7C5CFF] hover:from-[#4c32d4] hover:to-[#6a4ce8] text-white rounded-xl shadow-md hover:shadow-lg transition-all">
-            <Share2 className="w-4 h-4 mr-2" /> Share Analysis
+          <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px" onClick={addToWatchlist}>
+            <Star className="w-4 h-4 mr-1.5" /> Add to Watchlist
           </Button>
         </div>
       </div>
 
-      {/* Market Selector */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        {markets.map((m) => (
-          <button
-            key={m}
-            onClick={() => setActiveMarket(m)}
-            className={cn(
-              "px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200",
-              activeMarket === m
-                ? "bg-[#5B3DF5] text-white shadow-md"
-                : "bg-white text-[#6B7280] hover:bg-[#F3F0FF] hover:text-[#5B3DF5] border border-transparent hover:border-[#ECECEC]"
-            )}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
-
-      {/* Main Workspace */}
-      <div className="flex flex-col xl:flex-row gap-6">
-        {/* Chart Area */}
-        <div className="flex-1 min-w-0 space-y-4">
-          <Card className="rounded-3xl border-[#ECECEC] shadow-md overflow-hidden">
-            {/* Chart Header */}
-            <CardHeader className="pb-0">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
-                    <Input
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search symbol..."
-                      className="pl-9 w-48 rounded-xl border-[#ECECEC] bg-[#F8F9FC] focus:bg-white"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="bg-[#F3F0FF] text-[#5B3DF5] rounded-lg font-semibold">
-                        {symbol}
-                      </Badge>
-                      <span className={cn("text-sm font-semibold", priceChange >= 0 ? "text-green-600" : "text-red-600")}>
-                        {formatPrice(currentPrice)}
-                      </span>
-                      <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", priceChange >= 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600")}>
-                        {priceChange >= 0 ? "+" : ""}{priceChangePct.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 flex-wrap">
-                  {timeframes.map((tf) => (
-                    <button
-                      key={tf}
-                      onClick={() => setTimeframe(tf)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors",
-                        timeframe === tf
-                          ? "bg-[#5B3DF5] text-white"
-                          : "bg-[#F8F9FC] text-[#6B7280] hover:bg-[#F3F0FF] hover:text-[#5B3DF5]"
-                      )}
-                    >
-                      {tf}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </CardHeader>
-
-            {/* Chart Toolbar */}
-            <CardContent className="px-4 py-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#ECECEC]">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setChartType("area")}
-                    className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                      chartType === "area" ? "bg-[#F3F0FF] text-[#5B3DF5]" : "text-[#6B7280] hover:bg-[#F8F9FC]"
-                    )}
-                  >
-                    <AreaChart className="w-3.5 h-3.5" /> Area
-                  </button>
-                  <button
-                    onClick={() => setChartType("line")}
-                    className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                      chartType === "line" ? "bg-[#F3F0FF] text-[#5B3DF5]" : "text-[#6B7280] hover:bg-[#F8F9FC]"
-                    )}
-                  >
-                    <LineChart className="w-3.5 h-3.5" /> Line
-                  </button>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#6B7280] hover:bg-[#F8F9FC] transition-colors">
-                    <CandlestickChart className="w-3.5 h-3.5" /> Candle
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Switch id="sma" checked={showSMA} onCheckedChange={setShowSMA} />
-                      <Label htmlFor="sma" className="text-xs text-[#6B7280] cursor-pointer">SMA 20</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="ema" checked={showEMA} onCheckedChange={setShowEMA} />
-                      <Label htmlFor="ema" className="text-xs text-[#6B7280] cursor-pointer">EMA 12</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch id="vol" checked={showVolume} onCheckedChange={setShowVolume} />
-                      <Label htmlFor="vol" className="text-xs text-[#6B7280] cursor-pointer">Volume</Label>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-[#6B7280] hover:text-[#5B3DF5] hover:bg-[#F3F0FF]">
-                      <Settings2 className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-[#6B7280] hover:text-[#5B3DF5] hover:bg-[#F3F0FF]">
-                      <Camera className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-[#6B7280] hover:text-[#5B3DF5] hover:bg-[#F3F0FF]">
-                      <Maximize2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-
-            {/* Chart */}
-            <CardContent className="p-4 pt-0">
-              <div className="relative rounded-2xl overflow-hidden border border-[#ECECEC] bg-white" style={{ height: "520px" }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#5B3DF5" stopOpacity={0.25} />
-                        <stop offset="95%" stopColor="#5B3DF5" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
-                    <XAxis dataKey="time" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} minTickGap={30} />
-                    <YAxis
-                      domain={["auto", "auto"]}
-                      tick={{ fontSize: 11, fill: "#9CA3AF" }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(v) => formatPrice(v)}
-                      width={60}
-                    />
-                    {showVolume && (
-                      <YAxis yAxisId="volume" orientation="right" hide domain={[0, "auto"]} />
-                    )}
-                    <Tooltip content={<CustomTooltip />} />
-                    <ReferenceLine y={currentPrice} stroke="#5B3DF5" strokeDasharray="4 4" strokeOpacity={0.5} />
-                    {chartType === "area" ? (
-                      <Area type="monotone" dataKey="price" stroke="#5B3DF5" strokeWidth={2} fill="url(#priceGradient)" />
-                    ) : (
-                      <Line type="monotone" dataKey="price" stroke="#5B3DF5" strokeWidth={2} dot={false} />
-                    )}
-                    {showSMA && <Line type="monotone" dataKey="sma" stroke="#22C55E" strokeWidth={1.5} dot={false} />}
-                    {showEMA && <Line type="monotone" dataKey="ema" stroke="#F59E0B" strokeWidth={1.5} dot={false} />}
-                    {showVolume && (
-                      <Bar dataKey="volume" yAxisId="volume" fill="#E5E7EB" radius={[2, 2, 0, 0]} barSize={6} />
-                    )}
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Drawing Tools */}
-          <Card className="rounded-3xl border-[#ECECEC] shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 overflow-x-auto">
-                {drawingTools.map((tool) => {
-                  const Icon = tool.icon;
-                  return (
-                    <button
-                      key={tool.label}
-                      className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-[#5B3DF5] hover:text-white text-[#6B7280] transition-colors min-w-16"
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span className="text-[10px] font-medium">{tool.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Popular Pairs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {popularPairs.map((p) => (
-              <motion.div
-                key={p.pair}
-                whileHover={{ y: -4, boxShadow: "0 16px 32px -12px rgba(91,61,245,0.15)" }}
-                onClick={() => handlePairClick(p.pair)}
-                className="bg-white rounded-2xl border border-[#ECECEC] p-4 shadow-sm cursor-pointer transition-colors"
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+        <Input
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setShowSearchResults(true); }}
+          onFocus={() => setShowSearchResults(true)}
+          placeholder="Search stocks, ETFs, indices..."
+          className="pl-10 rounded-button border-border h-9 text-[13px]"
+        />
+        {showSearchResults && searchQuery.length >= 2 && searchResults && searchResults.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-[18px] shadow-card z-50 max-h-72 overflow-y-auto">
+            {searchResults.map((result) => (
+              <button
+                key={result.symbol}
+                onClick={() => handleSelectSymbol(result.symbol)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-primary/5 transition-colors first:rounded-t-[18px] last:rounded-b-[18px]"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-[#111827]">{p.pair}</span>
-                  <span className={cn("text-xs font-semibold", p.bullish ? "text-green-600" : "text-red-600")}>
-                    {p.change}
-                  </span>
+                <div className="w-8 h-8 rounded-button bg-primary/8 flex items-center justify-center shrink-0">
+                  <BarChart3 className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-2xl font-bold text-[#111827] mb-3">{p.price}</p>
-                <div className="flex items-end gap-0.5 h-8">
-                  {p.spark.map((v, i) => {
-                    const min = Math.min(...p.spark);
-                    const max = Math.max(...p.spark);
-                    const h = ((v - min) / (max - min || 1)) * 100;
-                    return (
-                      <div
-                        key={i}
-                        className={cn("flex-1 rounded-sm", p.bullish ? "bg-green-500" : "bg-red-500")}
-                        style={{ height: `${Math.max(10, h)}%`, opacity: 0.5 + (i / p.spark.length) * 0.5 }}
-                      />
-                    );
-                  })}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-text-primary">{result.name}</p>
+                  <p className="text-[11px] text-text-muted">{result.symbol} · {result.exchangeShortName}</p>
                 </div>
-              </motion.div>
+                <Badge className="bg-primary/8 text-primary hover:bg-primary/8 rounded text-[10px] border-0">{result.currency}</Badge>
+              </button>
             ))}
           </div>
+        )}
+        {showSearchResults && searchQuery.length >= 2 && searchResults && searchResults.length === 0 && !searchLoading && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-[18px] shadow-card z-50 p-4 text-center">
+            <p className="text-[13px] text-text-muted">No results found</p>
+          </div>
+        )}
+        {showSearchResults && (searchQuery.length < 2 || !searchResults) && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-[18px] shadow-card z-50 p-4 text-center">
+            <p className="text-[13px] text-text-muted">Type at least 2 characters</p>
+          </div>
+        )}
+      </div>
 
-          {/* Economic Calendar & News */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="rounded-3xl border-[#ECECEC] shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-[#5B3DF5]" /> Economic Calendar
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {economicEvents.map((e, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-[#F8F9FC] hover:bg-[#F3F0FF] transition-colors">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-medium text-[#6B7280]">{e.time}</span>
-                      <Badge
+      {/* Quote Header */}
+      {quoteLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
+        </div>
+      ) : quoteError ? (
+        <Card className="rounded-[18px] border-border shadow-card p-6">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-danger" />
+            <div className="flex-1">
+              <p className="text-[13px] font-medium text-text-primary">Unable to load market data</p>
+              <p className="text-[11px] text-text-muted">{quoteError}</p>
+            </div>
+            <Button variant="outline" className="rounded-button border-border text-[13px] h-8" onClick={() => window.location.reload()}>
+              <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Retry
+            </Button>
+          </div>
+        </Card>
+      ) : quote ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="rounded-[18px] border-border shadow-card">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Globe className="w-4 h-4 text-text-muted" />
+                <p className="text-[13px] text-text-muted">Symbol</p>
+              </div>
+              <p className="text-2xl font-semibold text-text-primary">{quote.symbol}</p>
+              <p className="text-[11px] text-text-muted truncate">{quote.name}</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-[18px] border-border shadow-card">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-text-muted" />
+                <p className="text-[13px] text-text-muted">Price</p>
+              </div>
+              <p className="text-2xl font-semibold text-text-primary">{formatPrice(quote.price)}</p>
+              <p className={cn("text-[11px] font-medium flex items-center gap-1", isBullish ? "text-success" : "text-danger")}>
+                {isBullish ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                {formatPrice(Math.abs(priceChange))} ({priceChangePct.toFixed(2)}%)
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-[18px] border-border shadow-card">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-text-muted" />
+                <p className="text-[13px] text-text-muted">Volume</p>
+              </div>
+              <p className="text-2xl font-semibold text-text-primary">{formatCompact(quote.volume)}</p>
+              <p className="text-[11px] text-text-muted">Avg: {formatCompact(quote.avgVolume)}</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-[18px] border-border shadow-card">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4 text-text-muted" />
+                <p className="text-[13px] text-text-muted">Market Cap</p>
+              </div>
+              <p className="text-2xl font-semibold text-text-primary">{formatCompact(quote.marketCap)}</p>
+              <p className="text-[11px] text-text-muted">{quote.exchangeShortName || "NYSE"}</p>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="rounded-button bg-bg p-1 mb-4">
+          <TabsTrigger value="overview" className="rounded-button text-[13px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Overview</TabsTrigger>
+          <TabsTrigger value="financials" className="rounded-button text-[13px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Financials</TabsTrigger>
+          <TabsTrigger value="news" className="rounded-button text-[13px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">News</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-0">
+          <div className="flex flex-col xl:flex-row gap-6">
+            <div className="flex-1 min-w-0 space-y-4">
+              {/* Chart Card */}
+              <Card className={cn("rounded-[18px] border-border shadow-card overflow-hidden", fullscreen && "fixed inset-4 z-50 bg-white")}>
+                <CardHeader className="pb-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary" className="bg-primary/8 text-primary rounded-button font-semibold text-[13px] border-0">
+                            {symbol}
+                          </Badge>
+                          <span className={cn("text-sm font-semibold", isBullish ? "text-success" : "text-danger")}>
+                            {formatPrice(currentPrice)}
+                          </span>
+                          <span className={cn("text-xs font-medium px-2 py-0.5 rounded-button", isBullish ? "bg-success/10 text-success" : "bg-danger/10 text-danger")}>
+                            {isBullish ? "+" : ""}{priceChangePct.toFixed(2)}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {timeframes.map((tf) => (
+                        <button
+                          key={tf}
+                          onClick={() => setTimeframe(tf)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-button text-[13px] font-medium transition-all duration-150",
+                            timeframe === tf
+                              ? "bg-primary text-white"
+                              : "bg-bg text-text-muted hover:bg-primary/5 hover:text-text-primary"
+                          )}
+                        >
+                          {tf}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="px-4 py-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setChartType("candle")}
                         className={cn(
-                          "rounded-md text-white",
-                          e.impact === "High" ? "bg-red-500" : e.impact === "Medium" ? "bg-orange-500" : "bg-green-500"
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-button text-[13px] font-medium transition-all duration-150",
+                          chartType === "candle" ? "bg-primary/5 text-primary" : "text-text-muted hover:bg-bg"
                         )}
                       >
-                        {e.impact}
-                      </Badge>
-                      <span className="text-sm font-medium text-[#111827]">{e.event}</span>
+                        <CandlestickChart className="w-3.5 h-3.5" /> Candle
+                      </button>
+                      <button
+                        onClick={() => setChartType("area")}
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-button text-[13px] font-medium transition-all duration-150",
+                          chartType === "area" ? "bg-primary/5 text-primary" : "text-text-muted hover:bg-bg"
+                        )}
+                      >
+                        <LineChartIcon className="w-3.5 h-3.5" /> Area
+                      </button>
+                      <button
+                        onClick={() => setShowIndicators(!showIndicators)}
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-button text-[13px] font-medium transition-all duration-150",
+                          showIndicators ? "bg-primary/5 text-primary" : "text-text-muted hover:bg-bg"
+                        )}
+                      >
+                        <Activity className="w-3.5 h-3.5" /> Indicators
+                      </button>
                     </div>
-                    <span className="text-xs text-[#6B7280]">{e.forecast}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-3xl border-[#ECECEC] shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-[#5B3DF5]" /> Market News
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {news.map((n, i) => (
-                  <div key={i} className="p-3 rounded-xl hover:bg-[#F8F9FC] transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="secondary" className="bg-[#F3F0FF] text-[#5B3DF5] rounded-md">
-                        {n.category}
-                      </Badge>
-                      <span className="text-xs text-[#6B7280]">{n.time}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setFullscreen(!fullscreen)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-button text-[13px] font-medium text-text-muted hover:bg-bg transition-all"
+                      >
+                        {fullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                        {fullscreen ? "Exit" : "Fullscreen"}
+                      </button>
                     </div>
-                    <p className="text-sm font-medium text-[#111827] group-hover:text-[#5B3DF5] transition-colors">{n.headline}</p>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                </CardContent>
 
-        {/* Right Analysis Panel */}
-        <div className="w-full xl:w-96 space-y-6">
-          {/* Watchlist */}
-          <Card className="rounded-3xl border-[#ECECEC] shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                <Star className="w-5 h-5 text-[#F59E0B]" /> Watchlist
-              </CardTitle>
-              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg hover:bg-[#F3F0FF]">
-                <Plus className="w-4 h-4 text-[#5B3DF5]" />
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {watchlist.map((w) => (
-                <div
-                  key={w.pair}
-                  onClick={() => handlePairClick(w.pair)}
-                  className={cn(
-                    "flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all",
-                    symbol.includes(w.pair.replace("/", "")) ? "bg-[#F3F0FF] border border-[#5B3DF5]/20" : "hover:bg-[#F3F0FF] border border-transparent"
+                <CardContent className="p-4 pt-0">
+                  {histLoading ? (
+                    <ChartSkeleton className={cn("h-[400px]", fullscreen && "h-[calc(100vh-200px)]")} />
+                  ) : histError ? (
+                    <div className={cn("flex items-center justify-center", fullscreen ? "h-[calc(100vh-200px)]" : "h-[400px]")}>
+                      <div className="text-center">
+                        <AlertCircle className="w-8 h-8 text-danger mx-auto mb-2" />
+                        <p className="text-[13px] text-text-muted">{histError}</p>
+                        <Button variant="outline" className="rounded-button border-border text-[13px] h-8 mt-3" onClick={() => window.location.reload()}>
+                          <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Retry
+                        </Button>
+                      </div>
+                    </div>
+                  ) : chartData.length > 0 ? (
+                    chartType === "candle" ? (
+                      <CandleChartComponent
+                        data={chartData}
+                        height={fullscreen ? window.innerHeight - 220 : 400}
+                        showSMA={showIndicators}
+                        showEMA={showIndicators}
+                        showVolume={true}
+                        showReference={true}
+                        currentPrice={currentPrice}
+                      />
+                    ) : (
+                      <PriceAreaChart
+                        data={chartData}
+                        height={fullscreen ? window.innerHeight - 220 : 400}
+                        showVolume={true}
+                        showReference={true}
+                        currentPrice={currentPrice}
+                      />
+                    )
+                  ) : (
+                    <div className={cn("flex items-center justify-center", fullscreen ? "h-[calc(100vh-200px)]" : "h-[400px]")}>
+                      <p className="text-[13px] text-text-muted">No historical data available</p>
+                    </div>
                   )}
-                >
-                  <div className="flex items-center gap-3">
-                    <Star className={cn("w-4 h-4", symbol.includes(w.pair.replace("/", "")) ? "text-[#5B3DF5]" : "text-[#F59E0B]")} />
-                    <div>
-                      <p className="text-sm font-semibold text-[#111827]">{w.pair}</p>
-                      <p className="text-xs text-[#6B7280]">{w.open ? "Market Open" : "Market Closed"}</p>
+                </CardContent>
+              </Card>
+
+              {/* Company Profile */}
+              {profileLoading ? (
+                <CardSkeleton />
+              ) : profile ? (
+                <Card className="rounded-[18px] border-border shadow-card">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-primary" /> Company Profile
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-[18px] bg-primary/8 flex items-center justify-center shrink-0">
+                        <Building2 className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-text-primary text-[15px]">{profile.companyName}</h3>
+                        <p className="text-[13px] text-text-muted">{profile.industry} · {profile.sector}</p>
+                        <p className="text-[11px] text-text-muted">{profile.country} · {profile.exchangeShortName}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-[#111827]">{w.price}</p>
-                    <p className={cn("text-xs font-medium", w.change.startsWith("+") ? "text-green-600" : "text-red-600")}>
-                      {w.change}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Instructor Trade Ideas */}
-          <Card className="rounded-3xl border-[#ECECEC] shadow-sm overflow-hidden">
-            <div className="relative">
-              <img
-                src={tradeIdeas[0].image}
-                alt="Trade idea"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-3 left-3">
-                <Badge className="bg-green-500 text-white rounded-md">Buy Signal</Badge>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-[#111827] mb-1">{tradeIdeas[0].title}</h3>
-              <p className="text-xs text-[#6B7280] mb-3">By {tradeIdeas[0].instructor} • {tradeIdeas[0].date}</p>
-              <div className="space-y-2 text-xs mb-4 bg-[#F8F9FC] rounded-xl p-3">
-                <div className="flex justify-between"><span className="text-[#6B7280]">Entry Zone</span><span className="font-medium text-[#111827]">{tradeIdeas[0].entry}</span></div>
-                <div className="flex justify-between"><span className="text-[#6B7280]">Stop Loss</span><span className="font-medium text-red-600">{tradeIdeas[0].stop}</span></div>
-                <div className="flex justify-between"><span className="text-[#6B7280]">Take Profit</span><span className="font-medium text-green-600">{tradeIdeas[0].take}</span></div>
-                <div className="flex justify-between"><span className="text-[#6B7280]">Risk:Reward</span><span className="font-medium text-[#111827]">{tradeIdeas[0].rr}</span></div>
-              </div>
-              <Button className="w-full bg-gradient-to-r from-[#5B3DF5] to-[#7C5CFF] hover:from-[#4c32d4] hover:to-[#6a4ce8] text-white rounded-xl">
-                View Full Analysis <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Trading Sessions */}
-          <Card className="rounded-3xl border-[#ECECEC] shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                <Zap className="w-5 h-5 text-[#F59E0B]" /> Trading Sessions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {sessions.map((s) => (
-                <div key={s.name} className="flex items-center justify-between p-3 rounded-xl bg-[#F8F9FC] hover:bg-[#F3F0FF] transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("w-2.5 h-2.5 rounded-full", s.open ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-gray-300")} />
-                    <div>
-                      <p className="text-sm font-semibold text-[#111827]">{s.name}</p>
-                      <p className="text-xs text-[#6B7280]">{s.pairs}</p>
+                    <p className="text-[13px] text-text-secondary leading-relaxed line-clamp-3">{profile.description}</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div className="p-3 rounded-[18px] bg-bg">
+                        <p className="text-[11px] text-text-muted mb-0.5">CEO</p>
+                        <p className="text-[13px] font-medium text-text-primary">{profile.ceo}</p>
+                      </div>
+                      <div className="p-3 rounded-[18px] bg-bg">
+                        <p className="text-[11px] text-text-muted mb-0.5">Employees</p>
+                        <p className="text-[13px] font-medium text-text-primary">{formatCompact(parseInt(profile.fullTimeEmployees || "0"))}</p>
+                      </div>
+                      <div className="p-3 rounded-[18px] bg-bg">
+                        <p className="text-[11px] text-text-muted mb-0.5">IPO Date</p>
+                        <p className="text-[13px] font-medium text-text-primary">{profile.ipoDate}</p>
+                      </div>
+                      <div className="p-3 rounded-[18px] bg-bg">
+                        <p className="text-[11px] text-text-muted mb-0.5">Website</p>
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-[13px] font-medium text-primary hover:underline truncate block">
+                          Visit
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                  <span className="text-xs font-medium text-[#6B7280]">{s.time}</span>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "Charts Saved", value: 24, icon: Save },
-              { label: "Ideas Viewed", value: 138, icon: TrendingUp },
-              { label: "Practice Sessions", value: 42, icon: Activity },
-              { label: "Journal Entries", value: 18, icon: BookOpen },
-            ].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <Card key={stat.label} className="rounded-2xl border-[#ECECEC] shadow-sm hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <Icon className="w-5 h-5 text-[#5B3DF5] mb-2" />
-                    <p className="text-2xl font-bold text-[#111827]">
-                      <CountUp end={stat.value} />
-                    </p>
-                    <p className="text-xs text-[#6B7280] mt-1">{stat.label}</p>
                   </CardContent>
                 </Card>
-              );
-            })}
-          </div>
+              ) : null}
 
-          {/* Resources */}
-          <Card className="rounded-3xl border-[#ECECEC] shadow-sm bg-gradient-to-br from-[#F3F0FF] to-white">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#111827] flex items-center gap-2">
-                <Download className="w-5 h-5 text-[#5B3DF5]" /> Trading Resources
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {[
-                "Trading Checklist",
-                "Risk Calculator",
-                "Position Size Calculator",
-                "Smart Money Cheat Sheet",
-              ].map((resource) => (
-                <button key={resource} className="w-full flex items-center justify-between p-3 rounded-xl bg-white hover:bg-[#F8F9FC] transition-colors text-left">
-                  <span className="text-sm font-medium text-[#111827]">{resource}</span>
-                  <Download className="w-4 h-4 text-[#6B7280]" />
-                </button>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+              {/* Popular Pairs / Market Data */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {marketLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
+                ) : marketOverview?.indices?.slice(0, 4).map((idx) => (
+                  <motion.div
+                    key={idx.symbol}
+                    whileHover={{ y: -2 }}
+                    className="bg-white rounded-[18px] border border-border p-4 shadow-card cursor-pointer transition-shadow duration-150 hover:shadow-card-hover"
+                    onClick={() => handleSelectSymbol(idx.symbol)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-[13px] text-text-primary">{idx.symbol}</span>
+                      <span className={cn("text-xs font-semibold", (idx.changePercent || 0) >= 0 ? "text-success" : "text-danger")}>
+                        {(idx.changePercent || 0) >= 0 ? "+" : ""}{(idx.changePercent || 0).toFixed(2)}%
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-text-primary">{formatPrice(idx.price)}</p>
+                    <p className="text-[11px] text-text-muted">{idx.name}</p>
+                  </motion.div>
+                ))}
+                {!marketLoading && !marketOverview?.indices && [
+                  { pair: "EURUSD", name: "EUR/USD", price: 1.0845, change: 0.12 },
+                  { pair: "GBPUSD", name: "GBP/USD", price: 1.2678, change: -0.05 },
+                  { pair: "USDJPY", name: "USD/JPY", price: 151.42, change: 0.23 },
+                  { pair: "XAUUSD", name: "Gold", price: 2385.6, change: 0.45 },
+                ].map((idx) => (
+                  <motion.div
+                    key={idx.pair}
+                    whileHover={{ y: -2 }}
+                    className="bg-white rounded-[18px] border border-border p-4 shadow-card cursor-pointer transition-shadow duration-150 hover:shadow-card-hover"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-[13px] text-text-primary">{idx.pair}</span>
+                      <span className={cn("text-xs font-semibold", idx.change >= 0 ? "text-success" : "text-danger")}>
+                        {idx.change >= 0 ? "+" : ""}{idx.change.toFixed(2)}%
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-text-primary">{formatPrice(idx.price)}</p>
+                    <p className="text-[11px] text-text-muted">{idx.name}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-full xl:w-80 space-y-6">
+              {/* Watchlist */}
+              <Card className="rounded-[18px] border-border shadow-card">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2">
+                    <Star className="w-4 h-4 text-warning" /> Watchlist
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 max-h-96 overflow-y-auto no-scrollbar">
+                  {watchlist.map((s) => {
+                    const liveQuote = liveQuotes?.find((q) => q.symbol === s);
+                    const isUp = (liveQuote?.change || 0) >= 0;
+                    return (
+                      <div
+                        key={s}
+                        onClick={() => handleSelectSymbol(s)}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-button cursor-pointer transition-all duration-150",
+                          symbol === s ? "bg-primary/5 border border-primary/20" : "hover:bg-primary/5 border border-transparent"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Star className={cn("w-4 h-4", symbol === s ? "text-primary" : "text-text-muted")} />
+                          <div>
+                            <p className="text-[13px] font-semibold text-text-primary">{s}</p>
+                            {liveQuote && (
+                              <p className={cn("text-[11px] font-medium", isUp ? "text-success" : "text-danger")}>
+                                {liveQuote.price?.toFixed(2)} ({isUp ? "+" : ""}{liveQuote.changesPercentage?.toFixed(2)}%)
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); removeFromWatchlist(s); }}
+                            className="p-1 rounded hover:bg-danger/5 text-text-muted hover:text-danger transition-colors"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {watchlist.length === 0 && (
+                    <div className="p-4 text-center">
+                      <p className="text-[13px] text-text-muted">Your watchlist is empty</p>
+                      <p className="text-[11px] text-text-muted">Search and add stocks to track</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Market Overview */}
+              <Card className="rounded-[18px] border-border shadow-card">
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-primary" /> Market Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {marketLoading ? (
+                    Array.from({ length: 3 }).map((_, i) => <ListItemSkeleton key={i} />)
+                  ) : marketOverview?.topGainers?.slice(0, 5).map((g) => (
+                    <div key={g.symbol} className="flex items-center justify-between p-2.5 rounded-button hover:bg-primary/5 transition-colors cursor-pointer" onClick={() => handleSelectSymbol(g.symbol)}>
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-success" />
+                        <div>
+                          <p className="text-[13px] font-medium text-text-primary">{g.symbol}</p>
+                          <p className="text-[11px] text-text-muted">{g.name}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[13px] font-medium text-text-primary">{formatPrice(g.price)}</p>
+                        <p className="text-[11px] text-success font-medium">+{g.changePercent.toFixed(2)}%</p>
+                      </div>
+                    </div>
+                  ))}
+                  {!marketLoading && !marketOverview?.topGainers && (
+                    <div className="p-4 text-center">
+                      <p className="text-[13px] text-text-muted">Market data unavailable</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Economic Calendar */}
+              <Card className="rounded-[18px] border-border shadow-card">
+                <CardHeader>
+                  <CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-primary" /> Economic Calendar
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {ecoLoading ? (
+                    Array.from({ length: 4 }).map((_, i) => <ListItemSkeleton key={i} />)
+                  ) : ecoCalendar?.slice(0, 5).map((e, i) => (
+                    <div key={i} className="p-3 rounded-[18px] bg-bg hover:bg-primary/5 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className={cn(
+                          "rounded text-[10px] border-0",
+                          e.impact?.toLowerCase().includes("high") ? "bg-danger/10 text-danger" :
+                          e.impact?.toLowerCase().includes("medium") ? "bg-warning/10 text-warning" :
+                          "bg-success/10 text-success"
+                        )}>
+                          {e.impact || "Low"}
+                        </Badge>
+                        <span className="text-[11px] text-text-muted">{e.country}</span>
+                      </div>
+                      <p className="text-[13px] font-medium text-text-primary">{e.event}</p>
+                      <div className="flex items-center gap-3 mt-1 text-[11px] text-text-muted">
+                        <span>Actual: {e.actual || "-"}</span>
+                        <span>Est: {e.estimate || "-"}</span>
+                        <span>Prev: {e.previous || "-"}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {!ecoLoading && (!ecoCalendar || ecoCalendar.length === 0) && (
+                    <div className="p-4 text-center">
+                      <p className="text-[13px] text-text-muted">No economic events</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: "Day High", value: quote ? formatPrice(quote.dayHigh) : "-" },
+                  { label: "Day Low", value: quote ? formatPrice(quote.dayLow) : "-" },
+                  { label: "Open", value: quote ? formatPrice(quote.open) : "-" },
+                  { label: "Prev Close", value: quote ? formatPrice(quote.previousClose) : "-" },
+                  { label: "52W High", value: quote ? formatPrice(quote.yearHigh) : "-" },
+                  { label: "52W Low", value: quote ? formatPrice(quote.yearLow) : "-" },
+                  { label: "P/E Ratio", value: quote ? quote.pe?.toFixed(2) : "-" },
+                  { label: "EPS", value: quote ? quote.eps?.toFixed(2) : "-" },
+                ].map((stat) => (
+                  <Card key={stat.label} className="rounded-[18px] border-border shadow-card">
+                    <CardContent className="p-4">
+                      <p className="text-[11px] text-text-muted mb-1">{stat.label}</p>
+                      <p className="text-lg font-semibold text-text-primary">{stat.value}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="financials" className="mt-0 space-y-6">
+          {financialChartData.length > 0 && (
+            <Card className="rounded-[18px] border-border shadow-card">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-text-primary flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-primary" /> Revenue & Income Trend (B USD)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <MultiLineChart
+                  data={financialChartData}
+                  lines={[
+                    { key: "Revenue", color: "#5B3DF5", name: "Revenue" },
+                    { key: "Gross Profit", color: "#22C55E", name: "Gross Profit" },
+                    { key: "Net Income", color: "#EF4444", name: "Net Income" },
+                    { key: "EBITDA", color: "#F59E0B", name: "EBITDA" },
+                  ]}
+                  height={300}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          <FinancialsTable
+            data={incomeData}
+            title="Income Statement"
+            fields={[
+              { key: "revenue", label: "Revenue", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "grossProfit", label: "Gross Profit", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "operatingIncome", label: "Operating Income", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "netIncome", label: "Net Income", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "eps", label: "EPS" },
+            ]}
+          />
+
+          <FinancialsTable
+            data={balanceData}
+            title="Balance Sheet"
+            fields={[
+              { key: "totalAssets", label: "Total Assets", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "totalLiabilities", label: "Liabilities", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "totalStockholdersEquity", label: "Equity", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "totalDebt", label: "Total Debt", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "cashAndCashEquivalents", label: "Cash", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+            ]}
+          />
+
+          <FinancialsTable
+            data={cashFlowData}
+            title="Cash Flow"
+            fields={[
+              { key: "operatingCashFlow", label: "Operating CF", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "capitalExpenditure", label: "CapEx", format: (v) => `$${(Math.abs(v) / 1e9).toFixed(1)}B` },
+              { key: "freeCashFlow", label: "Free Cash Flow", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "netIncome", label: "Net Income", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+              { key: "depreciationAndAmortization", label: "D&A", format: (v) => `$${(v / 1e9).toFixed(1)}B` },
+            ]}
+          />
+        </TabsContent>
+
+        <TabsContent value="news" className="mt-0">
+          <NewsSection symbol={symbol} />
+        </TabsContent>
+      </Tabs>
     </motion.div>
+  );
+}
+
+function NewsSection({ symbol }: { symbol: string }) {
+  const { data: news, loading } = useNews(symbol, 10);
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 4 }).map((_, i) => <ListItemSkeleton key={i} />)}
+      </div>
+    );
+  }
+
+  if (!news || news.length === 0) {
+    return (
+      <Card className="rounded-[18px] border-border shadow-card p-8 text-center">
+        <p className="text-[13px] text-text-muted">No news available for {symbol}</p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {news.map((n: NewsItem, i: number) => (
+        <a
+          key={i}
+          href={n.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block rounded-[18px] border border-border bg-white shadow-card hover:shadow-card-hover transition-shadow p-4"
+        >
+          <div className="flex items-start gap-3">
+            {n.image && (
+              <img src={n.image} alt="" className="w-20 h-20 rounded-button object-cover shrink-0" />
+            )}
+            <div className="min-w-0">
+              <p className="text-[13px] font-medium text-text-primary line-clamp-2 mb-1">{n.title}</p>
+              <p className="text-[11px] text-text-muted">{n.site} · {n.publishedDate}</p>
+              <p className="text-[11px] text-text-secondary line-clamp-2 mt-1">{n.text.slice(0, 120)}...</p>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
   );
 }

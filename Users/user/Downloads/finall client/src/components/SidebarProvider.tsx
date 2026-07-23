@@ -5,9 +5,16 @@ interface SidebarContextType {
   setMobileOpen: (open: boolean) => void;
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
+  toggleCollapsed: () => void;
 }
 
-const SidebarContext = createContext<SidebarContextType>({ mobileOpen: false, setMobileOpen: () => {}, collapsed: false, setCollapsed: () => {} });
+const SidebarContext = createContext<SidebarContextType>({
+  mobileOpen: false,
+  setMobileOpen: () => {},
+  collapsed: false,
+  setCollapsed: () => {},
+  toggleCollapsed: () => {},
+});
 
 export function useSidebar() {
   return useContext(SidebarContext);
@@ -15,19 +22,26 @@ export function useSidebar() {
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sidebar-collapsed");
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev: boolean) => {
+      const next = !prev;
+      localStorage.setItem("sidebar-collapsed", JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     const onResize = () => {
       const w = window.innerWidth;
-      if (w >= 1280) {
-        setCollapsed(false);
-        setMobileOpen(false);
-      } else if (w >= 768) {
-        setCollapsed(true);
-        setMobileOpen(false);
-      } else {
-        setCollapsed(false);
+      if (w < 768) {
         setMobileOpen(false);
       }
     };
@@ -37,7 +51,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SidebarContext.Provider value={{ mobileOpen, setMobileOpen, collapsed, setCollapsed }}>
+    <SidebarContext.Provider value={{ mobileOpen, setMobileOpen, collapsed, setCollapsed, toggleCollapsed }}>
       {children}
     </SidebarContext.Provider>
   );

@@ -88,6 +88,10 @@ export function SettingsPage() {
   const [fundingAlerts, setFundingAlerts] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [compactMode, setCompactMode] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(true);
+  const [communityVisible, setCommunityVisible] = useState(true);
+  const [hideEmail, setHideEmail] = useState(true);
+  const [hidePhone, setHidePhone] = useState(false);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -197,21 +201,42 @@ export function SettingsPage() {
             <Card className="rounded-[18px] border-border shadow-card">
               <CardHeader><CardTitle className="text-base font-semibold text-text-primary">Channels</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                {[{ label: "Email Notifications", desc: "Receive updates via email", icon: Mail, state: emailNotif, setter: setEmailNotif }, { label: "Push Notifications", desc: "Browser and mobile push alerts", icon: Bell, state: pushNotif, setter: setPushNotif }, { label: "SMS Notifications", desc: "Text message alerts", icon: Phone, state: smsNotif, setter: setSmsNotif }].map((c) => { const Icon = c.icon; return (
-                  <div key={c.label} className="flex items-center justify-between p-3 rounded-button border border-border">
-                    <div className="flex items-center gap-2.5"><Icon className="w-4 h-4 text-primary" /><div><p className="text-[13px] font-medium text-text-primary">{c.label}</p><p className="text-[11px] text-text-muted">{c.desc}</p></div></div>
-                    <Switch checked={c.state} onCheckedChange={c.setter} className="data-[state=checked]:bg-primary" />
-                  </div>
-                ); })}
+                {[
+                  { label: "Email Notifications", desc: "Receive updates via email", icon: Mail, state: emailNotif, setter: setEmailNotif },
+                  { label: "Push Notifications", desc: "Browser and mobile push alerts", icon: Bell, state: pushNotif, setter: setPushNotif },
+                  { label: "SMS Notifications", desc: "Text message alerts", icon: Phone, state: smsNotif, setter: setSmsNotif }
+                ].map((c) => {
+                  const Icon = c.icon;
+                  return (
+                    <div key={c.label} className="flex items-center justify-between p-3 rounded-button border border-border">
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="w-4 h-4 text-primary" />
+                        <div>
+                          <p className="text-[13px] font-medium text-text-primary">{c.label}</p>
+                          <p className="text-[11px] text-text-muted">{c.desc}</p>
+                        </div>
+                      </div>
+                      <Switch checked={c.state} onCheckedChange={c.setter} showLabels />
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
             <Card className="rounded-[18px] border-border shadow-card">
               <CardHeader><CardTitle className="text-base font-semibold text-text-primary">Preferences</CardTitle></CardHeader>
               <CardContent className="space-y-3">
-                {[{ label: "Live Class Reminders", desc: "Get notified before sessions start", state: liveReminders, setter: setLiveReminders }, { label: "Mentor Announcements", desc: "Updates from your instructors", state: mentorAlerts, setter: setMentorAlerts }, { label: "Challenge Updates", desc: "Challenge start, results, deadlines", state: challengeUpdates, setter: setChallengeUpdates }, { label: "Funding Alerts", desc: "Withdrawal and deposit notifications", state: fundingAlerts, setter: setFundingAlerts }].map((p) => (
-                  <div key={p.label} className="flex items-center justify-between py-2">
-                    <div><p className="text-[13px] font-medium text-text-primary">{p.label}</p><p className="text-[11px] text-text-muted">{p.desc}</p></div>
-                    <Switch checked={p.state} onCheckedChange={p.setter} className="data-[state=checked]:bg-primary" />
+                {[
+                  { label: "Live Class Reminders", desc: "Get notified before sessions start", state: liveReminders, setter: setLiveReminders },
+                  { label: "Mentor Announcements", desc: "Updates from your instructors", state: mentorAlerts, setter: setMentorAlerts },
+                  { label: "Challenge Updates", desc: "Challenge start, results, deadlines", state: challengeUpdates, setter: setChallengeUpdates },
+                  { label: "Funding Alerts", desc: "Withdrawal and deposit notifications", state: fundingAlerts, setter: setFundingAlerts }
+                ].map((p) => (
+                  <div key={p.label} className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors">
+                    <div>
+                      <p className="text-[13px] font-medium text-text-primary">{p.label}</p>
+                      <p className="text-[11px] text-text-muted">{p.desc}</p>
+                    </div>
+                    <Switch checked={p.state} onCheckedChange={p.setter} showLabels />
                   </div>
                 ))}
               </CardContent>
@@ -225,11 +250,23 @@ export function SettingsPage() {
             <div><h2 className="text-lg font-semibold text-text-primary">Appearance</h2><p className="text-[13px] text-text-muted mt-0.5">Customize the look and feel of your dashboard.</p></div>
             <Card className="rounded-[18px] border-border shadow-card">
               <CardContent className="p-6 space-y-5">
-                <div className="flex items-center justify-between"><div><p className="text-[13px] font-medium text-text-primary">Dark Mode</p><p className="text-[11px] text-text-muted">Switch between light and dark themes</p></div><Switch checked={darkMode} onCheckedChange={setDarkMode} className="data-[state=checked]:bg-primary" /></div>
+                <div className="flex items-center justify-between p-2">
+                  <div>
+                    <p className="text-[13px] font-medium text-text-primary">Dark Mode</p>
+                    <p className="text-[11px] text-text-muted">Switch between light and dark themes</p>
+                  </div>
+                  <Switch checked={darkMode} onCheckedChange={setDarkMode} showLabels />
+                </div>
                 <Separator className="bg-border" />
                 <div><p className="text-[13px] font-medium text-text-primary mb-3">Theme Color</p><div className="flex items-center gap-2">{["#5B3DF5", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#EC4899"].map((c) => <button key={c} className={cn("w-8 h-8 rounded-button transition-transform hover:scale-105", c === "#5B3DF5" && "ring-2 ring-offset-2 ring-primary")} style={{ backgroundColor: c }} />)}</div></div>
                 <Separator className="bg-border" />
-                <div className="flex items-center justify-between"><div><p className="text-[13px] font-medium text-text-primary">Compact Mode</p><p className="text-[11px] text-text-muted">Reduce spacing for more density</p></div><Switch checked={compactMode} onCheckedChange={setCompactMode} className="data-[state=checked]:bg-primary" /></div>
+                <div className="flex items-center justify-between p-2">
+                  <div>
+                    <p className="text-[13px] font-medium text-text-primary">Compact Mode</p>
+                    <p className="text-[11px] text-text-muted">Reduce spacing for more density</p>
+                  </div>
+                  <Switch checked={compactMode} onCheckedChange={setCompactMode} showLabels />
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -279,8 +316,19 @@ export function SettingsPage() {
             <div><h2 className="text-lg font-semibold text-text-primary">Privacy</h2><p className="text-[13px] text-text-muted mt-0.5">Control your profile and data visibility.</p></div>
             <Card className="rounded-[18px] border-border shadow-card">
               <CardContent className="space-y-3">
-                {[{ label: "Profile Visibility", desc: "Show your profile to other members", default: true }, { label: "Community Visibility", desc: "Show your activity in community", default: true }, { label: "Hide Email", desc: "Don't show email on your profile", default: true }, { label: "Hide Phone", desc: "Don't show phone on your profile", default: false }].map((p) => (
-                  <div key={p.label} className="flex items-center justify-between py-2"><div><p className="text-[13px] font-medium text-text-primary">{p.label}</p><p className="text-[11px] text-text-muted">{p.desc}</p></div><Switch defaultChecked={p.default} className="data-[state=checked]:bg-primary" /></div>
+                {[
+                  { label: "Profile Visibility", desc: "Show your profile to other members", state: profileVisible, setter: setProfileVisible },
+                  { label: "Community Visibility", desc: "Show your activity in community", state: communityVisible, setter: setCommunityVisible },
+                  { label: "Hide Email", desc: "Don't show email on your profile", state: hideEmail, setter: setHideEmail },
+                  { label: "Hide Phone", desc: "Don't show phone on your profile", state: hidePhone, setter: setHidePhone }
+                ].map((p) => (
+                  <div key={p.label} className="flex items-center justify-between p-3 rounded-button border border-border hover:border-primary/20 transition-colors">
+                    <div>
+                      <p className="text-[13px] font-medium text-text-primary">{p.label}</p>
+                      <p className="text-[11px] text-text-muted">{p.desc}</p>
+                    </div>
+                    <Switch checked={p.state} onCheckedChange={p.setter} showLabels />
+                  </div>
                 ))}
               </CardContent>
             </Card>
@@ -339,23 +387,39 @@ export function SettingsPage() {
         <p className="text-text-secondary text-[15px] mt-1">Manage your account preferences and security.</p>
       </div>
 
-      <div className="flex gap-6">
-        <nav className="w-52 shrink-0">
-          <div className="sticky top-20 space-y-0.5">
-            {menuItems.map((item) => {
+      <div className="flex flex-col lg:flex-row gap-6">
+        <nav className="w-full lg:w-52 shrink-0">
+          <div className="lg:sticky lg:top-20 space-y-0.5">
+            {menuItems.map((item, i) => {
               const Icon = item.icon;
               const active = activeSection === item.key;
               return (
-                <button key={item.key} onClick={() => setActiveSection(item.key)} className={cn("w-full flex items-center gap-2.5 px-3 py-2 rounded-button text-[13px] font-medium transition-all duration-150 text-left", active ? "bg-primary/8 text-primary" : "text-text-secondary hover:bg-bg hover:text-text-primary")}>
-                  <Icon className={cn("w-4 h-4", active ? "text-primary" : "text-text-muted")} />{item.label}
-                </button>
+                <motion.button
+                  key={item.key}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04, duration: 0.15 }}
+                  whileHover={{ x: 2 }}
+                  onClick={() => setActiveSection(item.key)}
+                  className={cn("w-full flex items-center gap-2.5 px-3 py-2.5 rounded-button text-[13px] font-medium transition-all duration-150 text-left", active ? "bg-primary/8 text-primary" : "text-text-secondary hover:bg-bg hover:text-text-primary")}
+                >
+                  <Icon className={cn("w-4 h-4", active ? "text-primary" : "text-text-muted")} />
+                  {item.label}
+                </motion.button>
               );
             })}
           </div>
         </nav>
 
         <div className="flex-1 min-w-0">
-          {renderSection()}
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {renderSection()}
+          </motion.div>
         </div>
       </div>
     </motion.div>
