@@ -400,9 +400,9 @@ const actions = [
 ];
 
 const courses = [
-  { title: "Forex Fundamentals", difficulty: "Beginner", progress: 75, image: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=120&h=80&fit=crop" },
-  { title: "Advanced Price Action", difficulty: "Advanced", progress: 42, image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=120&h=80&fit=crop" },
-  { title: "Risk Management Masterclass", difficulty: "Intermediate", progress: 30, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=120&h=80&fit=crop" },
+  { title: "Forex Fundamentals", difficulty: "Beginner", progress: 75, image: "/funding_pips_picture_2.jpg" },
+  { title: "Advanced Price Action", difficulty: "Advanced", progress: 42, image: "/funding_pips_picture_2.jpg" },
+  { title: "Risk Management Masterclass", difficulty: "Intermediate", progress: 30, image: "/funding_pips_picture_2.jpg" },
 ];
 
 const announcements = [
@@ -444,7 +444,7 @@ export function Dashboard() {
                 </Button>
               </div>
               <div className="hidden lg:block w-[280px] h-[180px] rounded-[18px] overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=500&h=400&fit=crop" alt="Trading" className="w-full h-full object-cover" />
+                <img src="/funding_pips_picture_4.jpg" alt="Trading" className="w-full h-full object-cover" />
               </div>
             </div>
           </CardContent>
@@ -623,7 +623,7 @@ export function Dashboard() {
 
         <Card className="rounded-[18px] border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow duration-200 cursor-pointer" onClick={() => handleNavigate("live")}>
           <div className="h-32 relative">
-            <img src="https://images.unsplash.com/photo-1611974765270-ca1258634369?w=400&h=250&fit=crop" alt="Live class" className="w-full h-full object-cover" />
+            <img src="/funding_pips_picture_3.png" alt="Live class" className="w-full h-full object-cover" />
             <Badge className="absolute top-3 left-3 bg-danger text-white hover:bg-danger rounded text-[10px]">LIVE</Badge>
           </div>
           <CardContent className="p-4">

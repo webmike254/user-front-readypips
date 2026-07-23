@@ -34,9 +34,9 @@ const quickActions = [
 ];
 
 const courses = [
-  { title: "Forex Fundamentals", difficulty: "Beginner", progress: 75, thumbnail: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=200&h=120&fit=crop" },
-  { title: "Smart Money Concepts", difficulty: "Advanced", progress: 42, thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=120&fit=crop" },
-  { title: "Risk Management Pro", difficulty: "Intermediate", progress: 90, thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=120&fit=crop" },
+  { title: "Forex Fundamentals", difficulty: "Beginner", progress: 75, thumbnail: "/funding_pips_picture_2.jpg" },
+  { title: "Smart Money Concepts", difficulty: "Advanced", progress: 42, thumbnail: "/funding_pips_picture_2.jpg" },
+  { title: "Risk Management Pro", difficulty: "Intermediate", progress: 90, thumbnail: "/funding_pips_picture_2.jpg" },
 ];
 
 const streakDays = [
@@ -79,11 +79,11 @@ export function DashboardPage() {
         className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5B3DF5] via-[#6B4CF6] to-[#7C5CFF] p-8 lg:p-10 shadow-xl shadow-violet-200"
       >
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-          <img
-            src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&h=500&fit=crop"
-            alt="Trading desk"
-            className="w-full h-full object-cover"
-          />
+            <img
+              src="/funding_pips_picture_3.png"
+              alt="Trading desk"
+              className="w-full h-full object-cover"
+            />
         </div>
         <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-center">
           <div className="flex-1 space-y-6">
@@ -96,8 +96,8 @@ export function DashboardPage() {
           </div>
           <div className="hidden lg:block w-[420px] h-[280px] rounded-2xl overflow-hidden shadow-2xl border border-white/20">
             <img
-              src="https://images.unsplash.com/photo-1611974765270-ca1258634369?w=800&h=500&fit=crop"
-              alt="Charts"
+              src="/funding_pips_picture_3.png"
+              alt="Programmer"
               className="w-full h-full object-cover"
             />
           </div>

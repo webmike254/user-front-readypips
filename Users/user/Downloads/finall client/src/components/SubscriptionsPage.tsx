@@ -373,8 +373,8 @@ export function SubscriptionsPage() {
           >
             <div className="absolute top-0 right-0 w-1/2 h-full opacity-20">
               <img
-                src="https://images.unsplash.com/photo-1611974765270-ca1258634369?w=800&h=400&fit=crop"
-                alt="Trading desk"
+                src="/funding_pips_picture_4.jpg"
+                alt="Analytics"
                 className="w-full h-full object-cover"
               />
             </div>

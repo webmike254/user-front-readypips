@@ -343,7 +343,11 @@ export function CertificatesPage() {
                             <div className="flex justify-between text-[13px] mb-1">
                               <span className="text-text-muted">Progress</span>
                               <span className="font-medium text-text-primary">{cert.score}%</span>
-                            </div>
+      </div>
+      <div className="rounded-3xl overflow-hidden relative h-[220px] md:h-[280px]">
+        <img src="/funding_pips_picture.jpg" alt="Certificates" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      </div>
                             <Progress value={cert.score} className="h-1.5" />
                           </div>
                         </div>

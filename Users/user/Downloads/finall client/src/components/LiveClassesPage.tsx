@@ -44,7 +44,7 @@ const upcomingClasses = [
     difficulty: "Intermediate", category: "Market Analysis",
     description: "Deep dive into EUR/USD price action, key levels, and institutional order flow.",
     registered: 128, seats: 200, language: "English", status: "Live",
-    thumbnail: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=600&h=340&fit=crop",
+    thumbnail: "/funding_pips_picture_3.png",
   },
   {
     id: 2, title: "Smart Money Concepts Masterclass",
@@ -54,7 +54,7 @@ const upcomingClasses = [
     difficulty: "Advanced", category: "Smart Money",
     description: "Learn how institutional traders engineer liquidity and manipulate retail order flow.",
     registered: 84, seats: 150, language: "English", status: "Starting Soon",
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=340&fit=crop",
+    thumbnail: "/funding_pips_picture_3.png",
   },
   {
     id: 3, title: "Risk Management for Beginners",
@@ -64,7 +64,7 @@ const upcomingClasses = [
     difficulty: "Beginner", category: "Risk Management",
     description: "Position sizing, stop-loss placement, and protecting your trading capital.",
     registered: 210, seats: 300, language: "English", status: "Upcoming",
-    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=340&fit=crop",
+    thumbnail: "/funding_pips_picture_3.png",
   },
   {
     id: 4, title: "Crypto Scalping Live Session",
@@ -74,17 +74,17 @@ const upcomingClasses = [
     difficulty: "Intermediate", category: "Crypto",
     description: "Live scalping session on BTC and ETH. Watch real trades in real-time.",
     registered: 56, seats: 100, language: "English", status: "Upcoming",
-    thumbnail: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=600&h=340&fit=crop",
+    thumbnail: "/funding_pips_picture_3.png",
   },
 ];
 
 const recordings = [
-  { title: "NFP Trading Strategy", duration: "1:24:00", date: "18 Jul 2026", instructor: "Omar Al-Farsi", thumbnail: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=225&fit=crop", views: 420 },
-  { title: "ICT Order Blocks", duration: "1:05:00", date: "15 Jul 2026", instructor: "Sarah Johnson", thumbnail: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=400&h=225&fit=crop", views: 380 },
-  { title: "Psychology of Winning", duration: "52:00", date: "12 Jul 2026", instructor: "Khalid Hassan", thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=225&fit=crop", views: 290 },
-  { title: "Crypto Scalping Live", duration: "1:10:00", date: "10 Jul 2026", instructor: "Omar Al-Farsi", thumbnail: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&h=225&fit=crop", views: 510 },
-  { title: "London Session Breakdown", duration: "1:30:00", date: "8 Jul 2026", instructor: "Sarah Johnson", thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop", views: 350 },
-  { title: "Risk Management Deep Dive", duration: "45:00", date: "5 Jul 2026", instructor: "Khalid Hassan", thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop", views: 270 },
+  { title: "NFP Trading Strategy", duration: "1:24:00", date: "18 Jul 2026", instructor: "Omar Al-Farsi", thumbnail: "/funding_pips_picture_3.png", views: 420 },
+  { title: "ICT Order Blocks", duration: "1:05:00", date: "15 Jul 2026", instructor: "Sarah Johnson", thumbnail: "/funding_pips_picture_3.png", views: 380 },
+  { title: "Psychology of Winning", duration: "52:00", date: "12 Jul 2026", instructor: "Khalid Hassan", thumbnail: "/funding_pips_picture_3.png", views: 290 },
+  { title: "Crypto Scalping Live", duration: "1:10:00", date: "10 Jul 2026", instructor: "Omar Al-Farsi", thumbnail: "/funding_pips_picture_3.png", views: 510 },
+  { title: "London Session Breakdown", duration: "1:30:00", date: "8 Jul 2026", instructor: "Sarah Johnson", thumbnail: "/funding_pips_picture_3.png", views: 350 },
+  { title: "Risk Management Deep Dive", duration: "45:00", date: "5 Jul 2026", instructor: "Khalid Hassan", thumbnail: "/funding_pips_picture_3.png", views: 270 },
 ];
 
 const weeklySchedule = [
@@ -155,6 +155,11 @@ export function LiveClassesPage() {
             <Video className="w-4 h-4 mr-1.5" /> Join Live
           </Button>
         </div>
+      </div>
+
+      <div className="rounded-3xl overflow-hidden relative h-[220px] md:h-[280px]">
+        <img src="/funding_pips_picture_3.png" alt="Live Classes" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
       {/* Next Live Class - Clean card with countdown */}

@@ -94,7 +94,7 @@ export function CommunityPage() {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="space-y-10 pb-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h1 className="text-[40px] font-bold text-text-primary">Community</h1>
           <p className="text-text-secondary text-[15px] mt-1">Connect with fellow ReadyPips traders, share insights, and grow together.</p>
         </div>
@@ -103,6 +103,10 @@ export function CommunityPage() {
             <Plus className="w-4 h-4 mr-1.5" /> New Discussion
           </Button>
         </div>
+      </div>
+      <div className="rounded-3xl overflow-hidden relative h-[220px] md:h-[280px]">
+        <img src="/funding_pips_pictures_5.jpg" alt="Community" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

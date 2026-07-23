@@ -70,7 +70,7 @@ export function HeroBanner() {
         </div>
         <div className="hidden md:block w-[48%] relative">
           <img
-            src="https://images.unsplash.com/photo-1642790551116-18e150f248e5?w=1000&q=80"
+            src="/funding_pips_picture_3.png"
             alt="Trader at desk"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />

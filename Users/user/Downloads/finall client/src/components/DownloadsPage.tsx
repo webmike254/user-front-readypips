@@ -72,7 +72,11 @@ export function DownloadsPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="space-y-10 pb-8">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="rounded-3xl overflow-hidden relative h-[220px] md:h-[280px]">
+        <img src="/funding_pips_picture_2.jpg" alt="Downloads" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      </div>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mt-16 relative z-10">
         <div>
           <h1 className="text-[40px] font-bold text-text-primary">Downloads</h1>
           <p className="text-text-secondary text-[15px] mt-1">Access your course materials, tools, and trading resources.</p>

@@ -213,6 +213,10 @@ export function TradingViewPage() {
           </Button>
         </div>
       </div>
+      <div className="rounded-3xl overflow-hidden relative h-[220px] md:h-[280px]">
+        <img src="/funding_pips_picture_4.jpg" alt="Analytics" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+      </div>
 
       {/* Search */}
       <div className="relative max-w-md">

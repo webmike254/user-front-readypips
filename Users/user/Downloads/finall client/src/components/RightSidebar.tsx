@@ -189,7 +189,7 @@ function UpcomingClass() {
       <Card className="rounded-[28px] border-[#ECECEC] shadow-sm overflow-hidden group">
         <div className="relative h-40 overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1642790551116-18e150f248e5?w=600&h=300&fit=crop"
+            src="/funding_pips_picture_4.jpg"
             alt="Live class"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
