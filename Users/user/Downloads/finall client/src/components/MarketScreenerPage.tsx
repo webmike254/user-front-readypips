@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import {
   Search,
   BarChart3,
@@ -336,11 +335,11 @@ export function MarketScreenerPage() {
   const { add } = useToast();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="space-y-10 pb-8">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[40px] font-bold text-text-primary">Market Screener</h1>
-          <p className="text-text-secondary text-[15px] mt-1">Real-time market data, gainers, losers, forex, and crypto.</p>
+          <h1 className="text-2xl font-bold text-text-primary">Market Screener</h1>
+          <p className="text-text-secondary text-[14px] mt-1">Real-time market data, gainers, losers, forex, and crypto.</p>
         </div>
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -401,6 +400,6 @@ export function MarketScreenerPage() {
           <SectorChart />
         </TabsContent>
       </Tabs>
-    </motion.div>
+    </div>
   );
 }

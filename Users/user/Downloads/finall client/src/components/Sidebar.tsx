@@ -103,7 +103,7 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
       <div className={cn("flex items-center mb-6", collapsed && "justify-center mb-5")}>
         <div className={cn(
           "rounded-lg flex items-center justify-center overflow-hidden transition-all duration-300",
-          collapsed ? "w-10 h-10" : "w-12 h-12"
+          collapsed ? "w-20 h-20" : "w-24 h-24"
         )}>
           <img
             src="https://i.postimg.cc/sX5XGLk8/Ready-pips-black-ligo-removebg-preview-(2).png"

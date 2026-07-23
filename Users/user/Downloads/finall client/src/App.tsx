@@ -132,7 +132,7 @@ function Header() {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+          <div className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden">
             <img src="https://i.postimg.cc/sX5XGLk8/Ready-pips-black-ligo-removebg-preview-(2).png" alt="ReadyPips" className="w-full h-full object-contain" />
           </div>
         </div>

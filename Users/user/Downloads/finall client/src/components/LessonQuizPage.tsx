@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -726,14 +726,6 @@ export function LessonQuizPage() {
       </div>
     </div>
   );
-}
-
-function useMemo<T>(factory: () => T, deps: any[]): T {
-  const ref = useRef<T>(null as any);
-  if (ref.current === null || deps.some((d, i) => d !== (ref.current as any).__deps?.[i])) {
-    ref.current = { ...factory(), __deps: deps } as any;
-  }
-  return ref.current;
 }
 
 interface QuizResultsProps {

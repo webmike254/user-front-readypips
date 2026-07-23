@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Video, BarChart3, Users, Headphones, Flame, Calendar, Clock, ChevronRight, Bell, Download, Award, TrendingUp, TrendingDown, Activity, ArrowUpRight, ArrowDownRight, RefreshCw, Newspaper, Globe, Zap } from "lucide-react";
+import { BookOpen, Video, BarChart3, Users, Headphones, Flame, Calendar, Clock, ChevronRight, Bell, Download, Award, TrendingUp, TrendingDown, Activity, ArrowUpRight, ArrowDownRight, RefreshCw, Newspaper, Globe, Zap, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -451,6 +451,38 @@ export function Dashboard() {
         </Card>
 
         <MarketTicker />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Total Balance", value: "$12,840", change: "+8.2%", icon: DollarSign, color: "text-success" },
+            { label: "Open Trades", value: "3", change: "2 P&L", icon: Activity, color: "text-primary" },
+            { label: "Win Rate", value: "68%", change: "+4%", icon: TrendingUp, color: "text-success" },
+            { label: "This Month", value: "+$1,240", change: "+12%", icon: Zap, color: "text-warning" },
+          ].map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.2 }}
+              >
+                <Card className="rounded-[18px] border-border shadow-card hover:shadow-card-hover transition-shadow duration-200">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-9 h-9 rounded-button bg-primary/8 flex items-center justify-center">
+                        <Icon className={cn("w-4 h-4", s.color)} />
+                      </div>
+                      <span className={cn("text-[11px] font-semibold", s.color)}>{s.change}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-text-primary">{s.value}</p>
+                    <p className="text-[12px] text-text-muted mt-0.5">{s.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {actions.map((a, i) => {
