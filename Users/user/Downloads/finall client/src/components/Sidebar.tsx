@@ -100,9 +100,9 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
   const SidebarContent = () => (
     <div className={cn("flex flex-col h-full", collapsed ? "px-2 py-4 items-center" : "px-3 py-4")}>
       {/* Logo - expanded image only */}
-      <div className={cn("flex items-center mb-6", collapsed && "justify-center mb-5")}>
+      <div className={cn("flex items-center mb-6 pt-2", collapsed && "justify-center mb-5 pt-2")}>
         <div className={cn(
-          "rounded-lg flex items-center justify-center overflow-hidden transition-all duration-300",
+          "rounded-[16px] flex items-center justify-center overflow-hidden transition-all duration-300",
           collapsed ? "w-20 h-20" : "w-24 h-24"
         )}>
           <img
