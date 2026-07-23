@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageContext } from "@/components/PageContext";
 import { cn } from "@/lib/utils";
+import { RightSidebar } from "@/components/RightSidebar";
 
 // ---- Dynamic imports for code splitting ----
 const Dashboard = React.lazy(() => import("@/components/Dashboard").then((m) => ({ default: m.Dashboard })));
@@ -60,21 +61,21 @@ const PAGE_META: Record<string, { label: string; parent?: string; parentLabel?: 
 function Breadcrumbs({ currentPage, onNavigate }: { currentPage: string; onNavigate: (page: string) => void }) {
   const meta = PAGE_META[currentPage] || { label: "Dashboard" };
   return (
-    <div className="flex items-center gap-1.5 text-[12px] text-text-muted">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12px] text-text-muted">
       <button onClick={() => onNavigate("dashboard")} className="hover:text-primary transition-colors flex items-center gap-1">
-        <Home className="w-3 h-3" /> Home
+        <Home className="w-3 h-3" aria-hidden="true" /> Home
       </button>
       {meta.parent && (
         <>
-          <ChevronRight className="w-3 h-3" />
+          <ChevronRight className="w-3 h-3" aria-hidden="true" />
           <button onClick={() => onNavigate(meta.parent!)} className="hover:text-primary transition-colors">
             {meta.parentLabel}
           </button>
         </>
       )}
-      <ChevronRight className="w-3 h-3" />
-      <span className="text-text-primary font-medium">{meta.label}</span>
-    </div>
+      <ChevronRight className="w-3 h-3" aria-hidden="true" />
+      <span className="text-text-primary font-medium" aria-current="page">{meta.label}</span>
+    </nav>
   );
 }
 
@@ -105,8 +106,9 @@ function SearchDropdown() {
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-3 h-9 rounded-[12px] bg-white border border-border text-text-muted hover:border-primary/30 hover:text-primary transition-all"
+        aria-label="Open search"
       >
-        <Search className="w-4 h-4" />
+        <Search className="w-4 h-4" aria-hidden="true" />
         <span className="text-[13px] hidden md:inline">Search...</span>
         <kbd className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded bg-bg border border-border text-text-muted">⌘K</kbd>
       </button>
@@ -121,13 +123,14 @@ function SearchDropdown() {
           >
             <div className="p-3 border-b border-border">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" aria-hidden="true" />
                 <input
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search pages, courses, tools..."
                   className="w-full h-9 pl-10 pr-3 rounded-[10px] bg-bg border border-border text-[13px] text-text-primary focus:outline-none focus:border-primary"
+                  aria-label="Search pages"
                 />
               </div>
             </div>
@@ -140,14 +143,11 @@ function SearchDropdown() {
                   return (
                     <button
                       key={r.label}
-                      onClick={() => {
-                        setOpen(false);
-                        setQuery("");
-                      }}
+                      onClick={() => { setOpen(false); setQuery(""); }}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[10px] hover:bg-bg text-left transition-colors"
                     >
                       <div className="w-7 h-7 rounded-[8px] bg-primary/8 flex items-center justify-center">
-                        <Icon className="w-3.5 h-3.5 text-primary" />
+                        <Icon className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
                       </div>
                       <span className="text-[13px] font-medium text-text-primary">{r.label}</span>
                     </button>
@@ -186,9 +186,12 @@ function NotificationsDropdown() {
       <button
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-[12px] bg-white border border-border text-text-muted hover:border-primary/30 hover:text-primary transition-all"
+        aria-label="Notifications"
+        aria-haspopup="true"
+        aria-expanded={open}
       >
-        <Bell className="w-4 h-4" />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-danger rounded-full animate-pulse" />
+        <Bell className="w-4 h-4" aria-hidden="true" />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-danger rounded-full animate-pulse" aria-hidden="true" />
       </button>
       <AnimatePresence>
         {open && (
@@ -209,7 +212,7 @@ function NotificationsDropdown() {
                   key={i}
                   className={cn("flex items-start gap-3 p-4 border-b border-border/50 hover:bg-bg transition-colors cursor-pointer", n.unread && "bg-primary/[0.02]")}
                 >
-                  <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", n.color)} />
+                  <div className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", n.color)} aria-hidden="true" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-text-primary">{n.title}</p>
                     <p className="text-[12px] text-text-secondary mt-0.5">{n.desc}</p>
@@ -251,9 +254,12 @@ function MessagesDropdown() {
       <button
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-[12px] bg-white border border-border text-text-muted hover:border-primary/30 hover:text-primary transition-all"
+        aria-label="Messages"
+        aria-haspopup="true"
+        aria-expanded={open}
       >
-        <MessageSquare className="w-4 h-4" />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+        <MessageSquare className="w-4 h-4" aria-hidden="true" />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" aria-hidden="true" />
       </button>
       <AnimatePresence>
         {open && (
@@ -285,7 +291,7 @@ function MessagesDropdown() {
                     </div>
                     <p className="text-[12px] text-text-secondary mt-0.5 truncate">{m.text}</p>
                   </div>
-                  {m.unread && <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />}
+                  {m.unread && <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" aria-hidden="true" />}
                 </div>
               ))}
             </div>
@@ -330,10 +336,11 @@ function LiveClock() {
       <button
         onClick={() => setShowZone(!showZone)}
         className="flex items-center gap-2 text-[13px] hover:bg-bg rounded-[12px] px-2.5 py-2 transition-colors border border-border bg-white"
+        aria-label="Toggle timezone info"
       >
-        <Clock className="w-3.5 h-3.5 text-primary" />
+        <Clock className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
         <span className="font-mono font-medium text-text-primary hidden sm:inline">{formatTime(displayTime)}</span>
-        <Globe className="w-3 h-3 text-text-muted" />
+        <Globe className="w-3 h-3 text-text-muted" aria-hidden="true" />
       </button>
       <AnimatePresence>
         {showZone && (
@@ -346,7 +353,7 @@ function LiveClock() {
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" aria-hidden="true" />
                 <span className="text-[12px] font-medium text-text-primary">Live Clock</span>
               </div>
               <div className="border-t border-border pt-2 space-y-1.5">
@@ -377,16 +384,16 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
   const { setMobileOpen } = useSidebar();
 
   return (
-    <div className="sticky top-0 z-20 px-4 lg:px-8 pt-4 pb-2 bg-bg/80 backdrop-blur-md">
-      <div className="flex items-center justify-between gap-3">
+    <header className="sticky top-0 z-20 px-4 md:px-6 lg:px-8 pt-4 pb-2 bg-bg/80 backdrop-blur-md">
+      <div className="max-w-dashboard mx-auto flex items-center justify-between gap-3">
         {/* Left: Mobile menu + Logo + Breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => setMobileOpen(true)}
-            className="md:hidden p-2 rounded-[12px] bg-white border border-border text-text-muted hover:text-primary transition-colors"
+            className="lg:hidden p-2 rounded-[12px] bg-white border border-border text-text-muted hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:outline-none"
             aria-label="Open menu"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5" aria-hidden="true" />
           </button>
           <div className="hidden md:block">
             <Breadcrumbs currentPage={currentPage} onNavigate={onNavigate} />
@@ -407,7 +414,7 @@ function FloatingTopBar({ currentPage, onNavigate }: { currentPage: string; onNa
           </Avatar>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
@@ -437,25 +444,36 @@ function AppContent() {
     <PageContext.Provider value={{ currentPage, setCurrentPage }}>
       <div className="min-h-screen flex bg-bg">
         <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-        <div className="flex-1 flex flex-col min-w-0">
-          <FloatingTopBar currentPage={currentPage} onNavigate={setCurrentPage} />
-          <main className="flex-1 p-4 md:p-6 lg:px-8 lg:pb-8 overflow-y-auto">
-            <ErrorBoundary>
-              <Suspense fallback={<PageLoader />}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentPage}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                  >
-                    {renderPage()}
-                  </motion.div>
-                </AnimatePresence>
-              </Suspense>
-            </ErrorBoundary>
-          </main>
+
+        {/* 3-column layout on xl+, 2-column on lg, 1-column on <lg */}
+        <div className="flex-1 flex min-w-0">
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <FloatingTopBar currentPage={currentPage} onNavigate={setCurrentPage} />
+
+            <main className="flex-1 overflow-y-auto">
+              <div className="max-w-dashboard mx-auto px-4 md:px-6 lg:px-8 pb-8">
+                <ErrorBoundary>
+                  <Suspense fallback={<PageLoader />}>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentPage}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -12 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                      >
+                        {renderPage()}
+                      </motion.div>
+                    </AnimatePresence>
+                  </Suspense>
+                </ErrorBoundary>
+              </div>
+            </main>
+          </div>
+
+          {/* Right sidebar - visible on xl+ */}
+          <RightSidebar />
         </div>
       </div>
     </PageContext.Provider>

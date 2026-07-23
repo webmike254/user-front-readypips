@@ -49,7 +49,7 @@ function AnimatedNumber({ value }: { value: number }) {
 
 export function RightSidebar() {
   return (
-    <aside className="hidden xl:flex w-[340px] 2xl:w-[360px] h-full overflow-y-auto pr-0 flex-col space-y-6 no-scrollbar">
+    <aside className="hidden xl:flex w-[360px] 2xl:w-[380px] h-full overflow-y-auto pr-0 flex-col space-y-6 no-scrollbar shrink-0 py-6">
       <CalendarWidget />
       <ProgressWidget />
       <UpcomingClass />

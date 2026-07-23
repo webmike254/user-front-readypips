@@ -2,6 +2,17 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    screens: {
+      // Mobile-first custom breakpoints (desktop-first overrides below)
+      '2xs': '480px',
+      'xs': '640px',
+      'sm': '768px',
+      'md': '1024px',
+      'lg': '1280px',
+      'xl': '1440px',
+      '2xl': '1600px',
+      '3xl': '1800px',
+    },
     extend: {
       colors: {
         bg: "#F7F8FA",
@@ -36,6 +47,14 @@ export default {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+      },
+      maxWidth: {
+        'dashboard': '1760px',
+      },
+      spacing: {
+        'sidebar': '280px',
+        'sidebar-collapsed': '72px',
+        'right-sidebar': '380px',
       },
     },
   },

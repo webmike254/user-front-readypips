@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Search, Clock, BookOpen, Play, Star, Award, TrendingUp,
   BarChart3, CheckCircle2, PlayCircle, Lock, Brain, Shield, Globe, Bitcoin,
@@ -7,14 +7,13 @@ import {
   Share2, Download, Bookmark, MoreHorizontal, CircleCheck, ShieldCheck,
   CandlestickChart, Network, Landmark, BrainCircuit, Sparkles, Medal,
   GraduationCap, MessageSquare, MonitorPlay, ClipboardCheck, BadgeCheck,
-  FolderDown, Activity, Languages, ChevronRight, Loader2,
+  FolderDown, Activity, Languages, ChevronRight, Loader2, Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { useLoading } from "@/hooks/useLoading";
 import { usePageNavigation } from "@/components/PageContext";
 import { cn } from "@/lib/utils";
 
@@ -134,7 +133,7 @@ const allCourses: Course[] = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  Lazy Image Hook                                                   */
+/*  Lazy Image Hook  – IntersectionObserver                           */
 /* ------------------------------------------------------------------ */
 
 function useLazyImage(src: string) {
@@ -156,7 +155,7 @@ function useLazyImage(src: string) {
           }
         });
       },
-      { rootMargin: "50px" }
+      { rootMargin: "120px" }
     );
 
     observer.observe(img);
@@ -178,6 +177,8 @@ function LazyImage({ src, alt, className }: { src: string; alt: string; classNam
       <img
         ref={imgRef}
         alt={alt}
+        loading="lazy"
+        decoding="async"
         className={cn(
           "w-full h-full object-cover transition-all duration-700 ease-out",
           loaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
@@ -185,7 +186,7 @@ function LazyImage({ src, alt, className }: { src: string; alt: string; classNam
       />
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-6 h-6 text-text-muted animate-spin" />
+          <Loader2 className="w-6 h-6 text-text-muted animate-spin" aria-hidden="true" />
         </div>
       )}
     </div>
@@ -212,33 +213,28 @@ function StatusBadge({ status }: { status: CourseStatus }) {
   const Icon = icons[status];
 
   return (
-    <span className={cn(
-      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold border",
-      styles[status]
-    )}>
-      <Icon className="w-3.5 h-3.5" />
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold border",
+        styles[status]
+      )}
+      aria-label={`Status: ${status}`}
+    >
+      <Icon className="w-3.5 h-3.5" aria-hidden="true" />
       {status}
     </span>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Overflow Menu                                                     */
+/*  Accessible Overflow Menu                                          */
 /* ------------------------------------------------------------------ */
 
 function OverflowMenu() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const items = [
     { label: "Share", icon: Share2 },
@@ -250,14 +246,54 @@ function OverflowMenu() {
     { label: "Report Issue", icon: MessageSquare },
   ];
 
+  const closeMenu = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        closeMenu();
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [closeMenu]);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (!open) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMenu();
+        buttonRef.current?.focus();
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const focusedIndex = itemRefs.current.findIndex((r) => r === document.activeElement);
+        const next = focusedIndex >= 0 && focusedIndex < items.length - 1 ? focusedIndex + 1 : 0;
+        itemRefs.current[next]?.focus();
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const focusedIndex = itemRefs.current.findIndex((r) => r === document.activeElement);
+        const prev = focusedIndex > 0 ? focusedIndex - 1 : items.length - 1;
+        itemRefs.current[prev]?.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open, items.length, closeMenu]);
+
   return (
     <div ref={menuRef} className="relative">
       <button
+        ref={buttonRef}
         onClick={() => setOpen(!open)}
-        className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors"
-        aria-label="More options"
+        className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
+        aria-label="More course options"
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
-        <MoreHorizontal className="w-4 h-4 text-white" />
+        <MoreHorizontal className="w-4 h-4 text-white" aria-hidden="true" />
       </button>
       <AnimatePresence>
         {open && (
@@ -266,16 +302,20 @@ function OverflowMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 mt-1 w-48 bg-white rounded-[14px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.06)] py-2 z-50"
+            className="absolute top-full right-0 mt-1 w-52 bg-white rounded-[14px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.06)] py-2 z-50"
+            role="menu"
           >
-            {items.map((item) => {
+            {items.map((item, i) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.label}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] text-text-secondary hover:bg-[#F8F7FF] hover:text-text-primary transition-colors"
+                  ref={(el) => { itemRefs.current[i] = el; }}
+                  role="menuitem"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] text-text-secondary hover:bg-[#F8F7FF] hover:text-text-primary transition-colors focus:outline-none focus-visible:bg-[#F8F7FF] min-h-[44px]"
+                  onClick={() => { closeMenu(); buttonRef.current?.focus(); }}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4" aria-hidden="true" />
                   {item.label}
                 </button>
               );
@@ -294,19 +334,22 @@ function OverflowMenu() {
 function SkeletonCard() {
   return (
     <div className="bg-white rounded-[20px] border border-[#ECECEC] overflow-hidden">
-      <div className="h-[180px] bg-gray-100 animate-pulse" />
+      <div className="h-[200px] bg-gray-100 animate-pulse" />
       <div className="p-5 space-y-4">
         <div className="flex gap-3">
           <div className="w-[72px] h-[72px] rounded-[18px] bg-gray-100 animate-pulse shrink-0" />
           <div className="flex-1 space-y-2">
-            <div className="h-5 bg-gray-100 rounded animate-pulse w-3/4" />
-            <div className="h-4 bg-gray-100 rounded animate-pulse w-full" />
+            <div className="h-8 bg-gray-100 rounded animate-pulse w-3/4" />
+            <div className="h-5 bg-gray-100 rounded animate-pulse w-full" />
           </div>
         </div>
-        <div className="flex gap-3">
-          <div className="h-4 bg-gray-100 rounded animate-pulse w-20" />
-          <div className="h-4 bg-gray-100 rounded animate-pulse w-20" />
-          <div className="h-4 bg-gray-100 rounded animate-pulse w-20" />
+        <div className="flex flex-wrap gap-3">
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
+          <div className="h-5 bg-gray-100 rounded animate-pulse w-20" />
         </div>
         <div className="h-3 bg-gray-100 rounded-full animate-pulse" />
         <div className="h-14 bg-gray-100 rounded-[16px] animate-pulse" />
@@ -321,6 +364,7 @@ function SkeletonCard() {
 
 function CourseCard({ course, index }: { course: Course; index: number }) {
   const { setCurrentPage } = usePageNavigation();
+  const prefersReduced = useReducedMotion();
   const Icon = course.icon;
 
   const btnConfig = {
@@ -331,13 +375,19 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
 
   const BtnIcon = btnConfig.icon;
 
+  const hoverY = prefersReduced ? 0 : -4;
+  const hoverScale = prefersReduced ? 1 : 1.03;
+  const animDuration = prefersReduced ? 0 : 0.4;
+
   return (
-    <motion.div
+    <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4, ease: "easeOut" }}
-      whileHover={{ y: -4 }}
-      className="group"
+      transition={{ delay: index * 0.05, duration: animDuration, ease: "easeOut" }}
+      whileHover={{ y: hoverY }}
+      className="group focus-within:ring-2 focus-within:ring-[#5B3DF5]/20 rounded-[20px]"
+      tabIndex={0}
+      aria-label={`${course.title}, ${course.status}, ${course.progress}% complete`}
     >
       <div className="bg-white rounded-[20px] border border-[#ECECEC] overflow-hidden transition-all duration-[220ms] ease-out hover:border-[#5B3DF5]/20 cursor-pointer h-full flex flex-col">
         {/* Hero Image */}
@@ -347,15 +397,15 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
             alt={course.title}
             className="h-full transition-transform duration-300 group-hover:scale-[1.03]"
           />
-          {/* Status Badge - Top Left */}
+          {/* Status Badge – Top Left */}
           <div className="absolute top-3 left-3">
             <StatusBadge status={course.status} />
           </div>
-          {/* Overflow Menu - Top Right */}
+          {/* Overflow Menu – Top Right */}
           <div className="absolute top-3 right-3">
             <OverflowMenu />
           </div>
-          {/* Track Tag - Bottom Left */}
+          {/* Track Tag – Bottom Left */}
           <div className="absolute bottom-3 left-3">
             <span className="inline-block px-2.5 py-1 bg-black/40 backdrop-blur-sm text-white text-[11px] font-medium rounded-full">
               {course.track}
@@ -370,56 +420,57 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
             <div
               className="w-[72px] h-[72px] rounded-[18px] flex items-center justify-center shrink-0 transition-colors duration-200"
               style={{ backgroundColor: course.iconBg }}
+              aria-hidden="true"
             >
               <Icon className="w-8 h-8" style={{ color: course.iconColor }} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-[18px] text-[#111827] leading-tight mb-1.5 group-hover:text-[#5B3DF5] transition-colors duration-200">
+              <h3 className="font-bold text-[32px] leading-[1.15] text-[#111827] mb-1.5 group-hover:text-[#5B3DF5] transition-colors duration-200">
                 {course.title}
               </h3>
-              <p className="text-[14px] text-text-muted leading-relaxed line-clamp-2">
+              <p className="text-[18px] text-text-muted leading-relaxed line-clamp-2">
                 {course.description}
               </p>
             </div>
           </div>
 
           {/* Metadata Row */}
-          <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4">
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <BookOpen className="w-4 h-4 text-text-muted" />
+          <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4" aria-label="Course metadata">
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <BookOpen className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.lessons} lessons</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <Clock3 className="w-4 h-4 text-text-muted" />
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <Clock3 className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.hours}h</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <BarChart3 className="w-4 h-4 text-text-muted" />
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <BarChart3 className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.difficulty}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <Star className="w-4 h-4 text-text-muted" />
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <Star className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.rating}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <Users className="w-4 h-4 text-text-muted" />
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <Users className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.students.toLocaleString()}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] text-text-muted">
-              <Languages className="w-4 h-4 text-text-muted" />
+            <div className="flex items-center gap-1.5 text-[15px] text-text-muted">
+              <Languages className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>{course.language}</span>
             </div>
           </div>
 
           {/* Progress Section */}
-          <div className="mb-5">
+          <div className="mb-5" role="region" aria-label="Progress">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[13px] font-medium text-text-primary">Progress</span>
+              <span className="text-[15px] font-medium text-text-primary">Progress</span>
               <div className="flex items-center gap-2">
-                <span className="text-[14px] font-bold text-text-primary">{course.progress}%</span>
+                <span className="text-[16px] font-bold text-text-primary">{course.progress}%</span>
                 <Badge
                   className={cn(
-                    "rounded-full text-[10px] border-0 px-2 py-0.5 font-medium",
+                    "rounded-full text-[11px] border-0 px-2.5 py-0.5 font-medium",
                     course.progress === 100 && "bg-emerald-50 text-emerald-700",
                     course.progress > 0 && course.progress < 100 && "bg-[#F0EBFF] text-[#5B3DF5]",
                     course.progress === 0 && "bg-gray-50 text-gray-500"
@@ -446,17 +497,19 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
           <Button
             onClick={() => setCurrentPage("quiz")}
             className={cn(
-              "w-full h-14 rounded-[16px] text-[15px] font-semibold transition-all duration-200 mt-auto",
-              "bg-[#5B3DF5] hover:bg-[#4A32D4] text-white hover:translate-y-[-2px]"
+              "w-full h-14 rounded-[16px] text-[17px] font-semibold transition-all duration-200 mt-auto min-h-[56px]",
+              "bg-[#5B3DF5] hover:bg-[#4A32D4] text-white hover:translate-y-[-2px]",
+              "focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40 focus-visible:ring-offset-2"
             )}
+            aria-label={btnConfig.text}
           >
-            <BtnIcon className="w-5 h-5 mr-2" />
+            <BtnIcon className="w-5 h-5 mr-2" aria-hidden="true" />
             {btnConfig.text}
-            <ChevronRight className="w-4 h-4 ml-1" />
+            <ChevronRight className="w-4 h-4 ml-1" aria-hidden="true" />
           </Button>
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }
 
@@ -469,7 +522,7 @@ export function MyCoursesPage() {
   const [search, setSearch] = useState("");
   const [showCompleted, setShowCompleted] = useState(true);
   const [loading, setLoading] = useState(true);
-  const isLoading = useLoading();
+  const prefersReduced = useReducedMotion();
   const { setCurrentPage } = usePageNavigation();
 
   useEffect(() => {
@@ -489,24 +542,16 @@ export function MyCoursesPage() {
   const completed = allCourses.filter((c) => c.status === "Completed");
   const notStarted = allCourses.filter((c) => c.status === "Not Started");
 
-  if (isLoading) return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="h-8 bg-gray-100 rounded animate-pulse w-48" />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <SkeletonCard key={i} />
-        ))}
-      </div>
-    </div>
-  );
+  const animY = prefersReduced ? 0 : 12;
+  const animDuration = prefersReduced ? 0 : 0.4;
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-8">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
+      <motion.header
+        initial={{ opacity: 0, y: animY }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: animDuration }}
         className="flex flex-col md:flex-row md:items-end justify-between gap-4"
       >
         <div>
@@ -518,29 +563,32 @@ export function MyCoursesPage() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all"
+            className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
             onClick={() => setCurrentPage("certificates")}
+            aria-label="View certificates"
           >
-            <Award className="w-4 h-4 mr-1.5" /> Certificates
+            <Award className="w-4 h-4 mr-1.5" aria-hidden="true" /> Certificates
           </Button>
           <Button
             variant="outline"
-            className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all"
+            className="rounded-[14px] h-10 px-5 text-[13px] border-[#ECECEC] hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/20 transition-all focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
             onClick={() => setCurrentPage("downloads")}
+            aria-label="View resources"
           >
-            <FileText className="w-4 h-4 mr-1.5" /> Resources
+            <FileText className="w-4 h-4 mr-1.5" aria-hidden="true" /> Resources
           </Button>
           <Button
-            className="rounded-[14px] h-10 px-5 text-[13px] bg-[#5B3DF5] hover:bg-[#4A32D4] text-white transition-all hover:translate-y-[-2px]"
+            className="rounded-[14px] h-10 px-5 text-[13px] bg-[#5B3DF5] hover:bg-[#4A32D4] text-white transition-all hover:translate-y-[-2px] focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/40"
             onClick={() => setCurrentPage("quiz")}
+            aria-label="Take a quiz"
           >
-            <PlayCircle className="w-4 h-4 mr-1.5" /> Take Quiz
+            <PlayCircle className="w-4 h-4 mr-1.5" aria-hidden="true" /> Take Quiz
           </Button>
         </div>
-      </motion.div>
+      </motion.header>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section aria-label="Course statistics" className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: "Enrolled", value: allCourses.length, icon: BookOpen, color: "#5B3DF5" },
           { label: "In Progress", value: inProgress.length, icon: PlayCircle, color: "#F59E0B" },
@@ -560,6 +608,7 @@ export function MyCoursesPage() {
                   <div
                     className="w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${s.color}10` }}
+                    aria-hidden="true"
                   >
                     <Icon className="w-5 h-5" style={{ color: s.color }} />
                   </div>
@@ -572,17 +621,18 @@ export function MyCoursesPage() {
             </motion.div>
           );
         })}
-      </div>
+      </section>
 
       {/* Search + Filters */}
-      <div className="space-y-4">
+      <section aria-label="Search and filters" className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" aria-hidden="true" />
           <Input
             placeholder="Search your courses..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 rounded-[14px] border-[#ECECEC] h-11 text-[14px] focus-visible:ring-[#5B3DF5]/20 focus-visible:border-[#5B3DF5]/30"
+            aria-label="Search courses"
           />
         </div>
 
@@ -595,13 +645,15 @@ export function MyCoursesPage() {
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2.5 rounded-[12px] text-[13px] font-medium transition-all duration-200",
+                  "flex items-center gap-2 px-4 py-2.5 rounded-[12px] text-[13px] font-medium transition-all duration-200 min-h-[44px]",
                   active
                     ? "bg-[#5B3DF5] text-white shadow-[0_2px_8px_rgba(91,61,245,0.15)]"
-                    : "bg-white border border-[#ECECEC] text-text-secondary hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/15"
+                    : "bg-white border border-[#ECECEC] text-text-secondary hover:bg-[#F8F7FF] hover:text-[#5B3DF5] hover:border-[#5B3DF5]/15 focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/30"
                 )}
+                aria-pressed={active}
+                aria-label={`Filter by ${cat.label}`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
                 {cat.label}
               </button>
             );
@@ -613,24 +665,25 @@ export function MyCoursesPage() {
             <span className="text-[13px] text-text-muted">Show completed</span>
             <Switch checked={showCompleted} onCheckedChange={setShowCompleted} showLabels />
           </div>
-          <p className="text-[13px] text-text-muted">
+          <p className="text-[13px] text-text-muted" aria-live="polite">
             {filtered.length} course{filtered.length !== 1 ? "s" : ""} found
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Continue Learning Spotlight */}
       {inProgress.length > 0 && activeCategory === "all" && !search && (
-        <motion.div
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
+          aria-label="Continue learning"
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[18px] font-semibold text-[#111827] flex items-center gap-2">
-              <PlayCircle className="w-5 h-5 text-[#5B3DF5]" /> Continue Learning
+              <PlayCircle className="w-5 h-5 text-[#5B3DF5]" aria-hidden="true" /> Continue Learning
             </h2>
-            <button className="text-[13px] text-[#5B3DF5] hover:underline font-medium">
+            <button className="text-[13px] text-[#5B3DF5] hover:underline font-medium min-h-[44px] px-2 rounded-lg focus-visible:ring-2 focus-visible:ring-[#5B3DF5]/30">
               View all
             </button>
           </div>
@@ -639,11 +692,11 @@ export function MyCoursesPage() {
               <CourseCard key={course.id} course={course} index={i} />
             ))}
           </div>
-        </motion.div>
+        </motion.section>
       )}
 
       {/* All Courses Grid */}
-      <div>
+      <section aria-label="All courses">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-[18px] font-semibold text-[#111827]">
             {activeCategory === "all" && !search ? "All Courses" : "Results"}
@@ -658,6 +711,7 @@ export function MyCoursesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+              aria-label="Loading courses"
             >
               {Array.from({ length: 8 }).map((_, i) => (
                 <SkeletonCard key={i} />
@@ -671,7 +725,7 @@ export function MyCoursesPage() {
               exit={{ opacity: 0 }}
               className="bg-white rounded-[20px] border border-[#ECECEC] p-16 text-center"
             >
-              <BookOpen className="w-10 h-10 text-text-muted mx-auto mb-4" />
+              <BookOpen className="w-10 h-10 text-text-muted mx-auto mb-4" aria-hidden="true" />
               <h3 className="text-[16px] font-medium text-[#111827] mb-1">No courses found</h3>
               <p className="text-[14px] text-text-muted">Try adjusting your search or filter.</p>
             </motion.div>
@@ -689,7 +743,7 @@ export function MyCoursesPage() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </section>
     </div>
   );
 }
