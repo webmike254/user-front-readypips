@@ -39,6 +39,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { downloadCoursePdf } from "@/lib/downloadPdf";
 
 const categories = [
   { name: "Forex", icon: BarChart3, count: 124 },
@@ -282,10 +283,10 @@ export function CommunityPage() {
             <CardHeader><CardTitle className="text-base font-semibold text-text-primary flex items-center gap-2"><Download className="w-4 h-4 text-primary" /> Resources</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {resources.map((r) => (
-                <div key={r.title} className="flex items-center justify-between p-2 rounded-button hover:bg-primary/5 transition-colors duration-150 cursor-pointer">
+                <button key={r.title} onClick={(e) => { e.preventDefault(); downloadCoursePdf(); }} className="w-full flex items-center justify-between p-2 rounded-button hover:bg-primary/5 transition-colors duration-150 cursor-pointer text-left">
                   <div className="flex items-center gap-2"><FileText className="w-4 h-4 text-text-muted" /><div><p className="text-[13px] font-medium text-text-primary">{r.title}</p><p className="text-[11px] text-text-muted">{r.type} · {r.size}</p></div></div>
                   <Download className="w-3.5 h-3.5 text-text-muted" />
-                </div>
+                </button>
               ))}
             </CardContent>
           </Card>

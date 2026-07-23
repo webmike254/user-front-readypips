@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { downloadCoursePdf } from "@/lib/downloadPdf";
 
 type FileCategory = "all" | "courses" | "tools" | "templates" | "signals";
 
@@ -58,8 +59,9 @@ export function DownloadsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [downloadedItems, setDownloadedItems] = useState<Set<number>>(new Set([1, 2, 4]));
 
-  const toggleDownloaded = (id: number) => {
-    setDownloadedItems((prev) => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  const handleDownloadClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    downloadCoursePdf();
   };
 
   const filtered = downloads.filter((d) => {
@@ -75,7 +77,7 @@ export function DownloadsPage() {
           <h1 className="text-[40px] font-bold text-text-primary">Downloads</h1>
           <p className="text-text-secondary text-[15px] mt-1">Access your course materials, tools, and trading resources.</p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All</Button>
+        <Button onClick={handleDownloadClick} className="bg-primary hover:bg-primary-hover text-white rounded-button h-9 px-4 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All</Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -102,7 +104,7 @@ export function DownloadsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="rounded-button border-border text-text-secondary hover:bg-primary/5 hover:text-primary text-[13px] h-8"><Eye className="w-3.5 h-3.5 mr-1" /> Preview</Button>
-                  <Button size="sm" className="bg-primary hover:bg-primary-hover text-white rounded-button text-[13px] h-8 font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
+                  <Button onClick={handleDownloadClick} size="sm" className="bg-primary hover:bg-primary-hover text-white rounded-button text-[13px] h-8 font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
                 </div>
               </div>
             </CardContent>
@@ -144,14 +146,7 @@ export function DownloadsPage() {
                           <span>·</span>
                           <span>{item.size}</span>
                         </div>
-                        {isDownloaded ? (
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <CheckCircle2 className="w-4 h-4 text-success" />
-                            <Button size="icon" variant="ghost" className="h-7 w-7 rounded text-text-muted hover:text-danger hover:bg-danger/5" onClick={() => toggleDownloaded(item.id)}><Trash2 className="w-3.5 h-3.5" /></Button>
-                          </div>
-                        ) : (
-                          <Button onClick={() => toggleDownloaded(item.id)} className="bg-primary hover:bg-primary-hover text-white rounded-button h-8 px-3 text-[13px] font-medium shrink-0 transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Get</Button>
-                        )}
+                        <Button onClick={handleDownloadClick} className="bg-primary hover:bg-primary-hover text-white rounded-button h-8 px-3 text-[13px] font-medium shrink-0 transition-all duration-150 hover:-translate-y-px"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -203,7 +198,7 @@ export function DownloadsPage() {
                 <div className="w-9 h-9 rounded-button bg-primary/8 flex items-center justify-center"><Package className="w-4 h-4 text-primary" /></div>
                 <div><p className="font-medium text-[13px] text-text-primary">Bulk Download</p><p className="text-[11px] text-text-muted">Get all files at once</p></div>
               </div>
-              <Button className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All (1.8 GB)</Button>
+              <Button onClick={handleDownloadClick} className="w-full bg-primary hover:bg-primary-hover text-white rounded-button h-9 text-[13px] font-medium transition-all duration-150 hover:-translate-y-px"><Download className="w-4 h-4 mr-1.5" /> Download All (1.8 GB)</Button>
             </CardContent>
           </Card>
         </div>

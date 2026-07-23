@@ -29,6 +29,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
+import { downloadCoursePdf } from "@/lib/downloadPdf";
 
 const container = {
   hidden: { opacity: 0 },
@@ -476,7 +477,7 @@ export function LiveClassesPage() {
                   <Button size="sm" variant="outline" className="rounded-lg h-8 text-xs border-[#ECECEC]">
                     <MonitorPlay className="w-3.5 h-3.5 mr-1" /> Replay
                   </Button>
-                  <Button size="sm" variant="outline" className="rounded-lg h-8 text-xs border-[#ECECEC]">
+                  <Button size="sm" variant="outline" className="rounded-lg h-8 text-xs border-[#ECECEC]" onClick={downloadCoursePdf}>
                     <Download className="w-3.5 h-3.5 mr-1" /> Notes
                   </Button>
                 </div>
@@ -506,7 +507,7 @@ export function LiveClassesPage() {
                     <p className="text-xs text-[#6B7280] mb-2">{res.desc}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-[#6B7280]">{res.size}</span>
-                      <Button size="sm" variant="ghost" className="h-7 text-xs text-[#5B3DF5] hover:bg-[#F3F0FF]">
+                      <Button size="sm" variant="ghost" className="h-7 text-xs text-[#5B3DF5] hover:bg-[#F3F0FF]" onClick={downloadCoursePdf}>
                         <Download className="w-3.5 h-3.5 mr-1" /> Download
                       </Button>
                     </div>
