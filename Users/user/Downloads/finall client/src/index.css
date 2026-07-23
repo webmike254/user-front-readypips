@@ -8,12 +8,36 @@
   * {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
-  
+
   body {
     background-color: #F7F8FA;
     color: #121212;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Focus visible for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid #5B3DF5;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Hide focus outline for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
