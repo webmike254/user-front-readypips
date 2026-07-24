@@ -28,6 +28,10 @@ const TradingToolsPage = React.lazy(() => import("@/components/TradingToolsPage"
 const MarketScreenerPage = React.lazy(() => import("@/components/MarketScreenerPage").then((m) => ({ default: m.MarketScreenerPage })));
 const LessonQuizPage = React.lazy(() => import("@/components/LessonQuizPage").then((m) => ({ default: m.LessonQuizPage })));
 const CompetitionPage = React.lazy(() => import("@/components/CompetitionPage").then((m) => ({ default: m.CompetitionPage })));
+const StrategyIndicatorsPage = React.lazy(() => import("@/components/StrategyIndicatorsPage").then((m) => ({ default: m.StrategyIndicatorsPage })));
+const CopyTradingPage = React.lazy(() => import("@/components/CopyTradingPage").then((m) => ({ default: m.CopyTradingPage })));
+const FundingPage = React.lazy(() => import("@/components/FundingPage").then((m) => ({ default: m.FundingPage })));
+const LeaderboardPage = React.lazy(() => import("@/components/LeaderboardPage").then((m) => ({ default: m.LeaderboardPage })));
 
 function PageLoader() {
   return (
@@ -44,6 +48,11 @@ function PageLoader() {
 
 const PAGE_META: Record<string, { label: string; parent?: string; parentLabel?: string }> = {
   dashboard: { label: "Dashboard" },
+  "strategy-indicators": { label: "Strategy Indicators", parent: "dashboard", parentLabel: "Dashboard" },
+  "copy-trading": { label: "Copy Trading", parent: "dashboard", parentLabel: "Dashboard" },
+  funding: { label: "Funding", parent: "dashboard", parentLabel: "Dashboard" },
+  challenges: { label: "Challenges", parent: "dashboard", parentLabel: "Dashboard" },
+  leaderboard: { label: "Leaderboard", parent: "dashboard", parentLabel: "Dashboard" },
   courses: { label: "My Courses", parent: "dashboard", parentLabel: "Dashboard" },
   live: { label: "Live Classes", parent: "dashboard", parentLabel: "Dashboard" },
   tradingview: { label: "TradingView", parent: "dashboard", parentLabel: "Dashboard" },
@@ -439,6 +448,11 @@ function AppContent() {
     const page = currentPage;
     switch (page) {
       case "dashboard": return <Dashboard />;
+      case "strategy-indicators": return <StrategyIndicatorsPage />;
+      case "copy-trading": return <CopyTradingPage />;
+      case "funding": return <FundingPage />;
+      case "challenges": return <CompetitionPage />;
+      case "leaderboard": return <LeaderboardPage />;
       case "courses": return <MyCoursesPage />;
       case "live": return <LiveClassesPage />;
       case "tradingview": return <TradingViewPage />;

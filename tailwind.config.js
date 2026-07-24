@@ -26,6 +26,8 @@ export default {
         success: "#22C55E",
         danger: "#EF4444",
         warning: "#F59E0B",
+        "mpesa-green": "#1a9e4f",
+        "mpesa-green-dark": "#0f7a3a",
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

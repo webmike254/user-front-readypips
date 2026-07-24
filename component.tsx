@@ -1,0 +1,1 @@
+<div key={item.label} className="text-center" style={{ minWidth: 56 }}>

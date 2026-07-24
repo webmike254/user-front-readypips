@@ -25,6 +25,15 @@ import {
   PanelLeftOpen,
   HelpCircle,
   Trophy,
+  TrendingUp,
+  Copy,
+  Wallet,
+  LineChart,
+  Crown,
+  Activity,
+  Zap,
+  Sparkles,
+  Target,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -32,8 +41,16 @@ interface SidebarProps {
   setCurrentPage: (page: string) => void;
 }
 
-const navItems = [
+const tradeItems = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { key: "strategy-indicators", label: "Strategy Indicators", icon: Activity },
+  { key: "copy-trading", label: "Copy Trading", icon: Copy },
+  { key: "funding", label: "Funding", icon: Wallet },
+  { key: "challenges", label: "Challenges", icon: Target },
+  { key: "leaderboard", label: "Leaderboard", icon: Crown },
+];
+
+const growItems = [
   { key: "courses", label: "My Courses", icon: BookOpen },
   { key: "live", label: "Live Classes", icon: Video },
   { key: "tradingview", label: "TradingView", icon: BarChart3 },
@@ -77,7 +94,7 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
     return () => mq.removeEventListener("change", handle);
   }, [collapsed, toggleCollapsed]);
 
-  const NavLink = ({ item, onClick }: { item: typeof navItems[0]; onClick?: () => void }) => {
+  const NavLink = ({ item, onClick }: { item: typeof tradeItems[0]; onClick?: () => void }) => {
     const Icon = item.icon;
     const active = currentPage === item.key;
     return (
@@ -118,6 +135,17 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
       </motion.button>
     );
   };
+
+  const SectionLabel = ({ label }: { label: string }) => (
+    <div className={cn("px-3 py-1.5", collapsed && "px-0 text-center")}>
+      <span className={cn(
+        "text-[10px] font-semibold uppercase tracking-widest text-text-muted",
+        collapsed && "text-[8px]"
+      )}>
+        {collapsed ? label.slice(0, 2) : label}
+      </span>
+    </div>
+  );
 
   const SidebarContent = () => (
     <div className={cn("flex flex-col h-full", collapsed ? "px-2 py-4 items-center" : "px-3 py-4")}>
@@ -189,7 +217,17 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto no-scrollbar w-full" aria-label="Main navigation">
-        {navItems.map((item) => (
+        {/* TRADE Section */}
+        <SectionLabel label="TRADE" />
+        {tradeItems.map((item) => (
+          <NavLink key={item.key} item={item} onClick={() => setMobileOpen(false)} />
+        ))}
+
+        <div className={cn("my-2 border-t border-border/50", collapsed && "mx-2")} />
+
+        {/* GROW Section */}
+        <SectionLabel label="GROW" />
+        {growItems.map((item) => (
           <NavLink key={item.key} item={item} onClick={() => setMobileOpen(false)} />
         ))}
       </nav>
@@ -251,13 +289,14 @@ export function Sidebar({ currentPage, setCurrentPage }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Desktop / Tablet sidebar */}
+      {/* Desktop / Tablet sidebar - Vertical rounded style */}
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? 72 : 280 }}
         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
-          "hidden lg:flex flex-col h-screen sticky top-0 bg-white border-r border-border z-30 overflow-hidden shrink-0"
+          "hidden lg:flex flex-col h-screen sticky top-0 bg-white z-30 overflow-hidden shrink-0",
+          "rounded-r-[24px] border-r border-border shadow-sm"
         )}
         aria-label="Desktop navigation"
       >
