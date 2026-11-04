@@ -34,8 +34,9 @@ export const PROVIDERS: ProviderConfig[] = [
     id: "groq",
     label: "Groq",
     models: [
-      { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B" },
-      { id: "llama-3.1-8b-instant", label: "Llama 3.1 8B Instant" },
+      { id: "openai/gpt-oss-120b", label: "GPT OSS 120B" },
+      { id: "openai/gpt-oss-20b", label: "GPT OSS 20B" },
+      { id: "qwen/qwen3.8-27b", label: "Qwen 3.8 27B" },
     ],
     voices: [
       { id: "autumn", label: "Autumn (Orpheus)" },

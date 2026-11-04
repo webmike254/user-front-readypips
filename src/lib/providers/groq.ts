@@ -9,7 +9,7 @@ export function createGroqSession(cb: VoiceSessionCallbacks): VoiceSession {
   let chunks: Blob[] = [];
   let stream: MediaStream | null = null;
   let messages: { role: string; content: string }[] = [];
-  let model = "llama-3.3-70b-versatile";
+  let model = "openai/gpt-oss-20b";
   let voice = "autumn";
   let language: string = "mixed";
 

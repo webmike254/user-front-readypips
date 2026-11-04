@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   const key = process.env.GROQ_API_KEY;
   if (!key) return NextResponse.json({ error: "GROQ_API_KEY missing" }, { status: 500 });
   const body = await req.json();
-  const model = body?.model || "llama-3.3-70b-versatile";
+  const model = body?.model || "openai/gpt-oss-20b";
   const messages = body?.messages || [];
   const language = body?.language || "mixed";
   const langHint = language === "sw" ? "Respond in Kiswahili." : language === "en" ? "Respond in English." : "Respond in natural Kenyan English/Kiswahili mix as the user does.";
