@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
 
         val numberInput = findViewById<EditText>(R.id.numberInput)
         val callButton = findViewById<Button>(R.id.callButton)
+        val vapiButton = findViewById<Button>(R.id.vapiButton)
 
         callButton.setOnClickListener {
             val number = numberInput.text.toString()
@@ -24,7 +25,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Request default dialer role if not already
+        vapiButton.setOnClickListener {
+            startActivity(Intent(this, VapiCallActivity::class.java))
+        }
+
         val telecomManager = getSystemService(TelecomManager::class.java)
         if (telecomManager?.defaultDialerPackage != packageName) {
             val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
