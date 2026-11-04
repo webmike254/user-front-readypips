@@ -42,21 +42,21 @@ export function createGroqSession(cb: VoiceSessionCallbacks): VoiceSession {
       cb.onTranscript({ id: crypto.randomUUID(), role: "assistant", text: assistantText, at: Date.now() });
       messages.push({ role: "assistant", content: assistantText });
     }
-    // tts
-    const ttsRes = await fetch("/api/groq/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: assistantText, voice, model: "canopylabs/orpheus-v1-english" }),
-    });
-    if (!ttsRes.ok) {
-      const err = await ttsRes.text();
-      cb.onError(err);
-      cb.onState("idle");
-      return;
-    }
-    const buf = await ttsRes.arrayBuffer();
+    // tts (browser speech synthesis fallback since Groq Orpheus requires terms acceptance)
     cb.onLatency(Math.round(performance.now() - t0));
     cb.onState("speaking");
+    await new Promise<void>((resolve) => {
+      try {
+        const utter = new SpeechSynthesisUtterance(assistantText);
+        utter.onend = () => resolve();
+        utter.onerror = () => resolve();
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch {
+        resolve();
+      }
+    });
+    cb.onState("idle");
     await player?.enqueueArrayBuffer(buf, "audio/wav");
   }
 

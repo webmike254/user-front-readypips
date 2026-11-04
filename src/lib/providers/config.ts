@@ -24,10 +24,10 @@ export const PROVIDERS: ProviderConfig[] = [
       { id: "eleven_multilingual_v2", label: "Eleven Multilingual v2" },
     ],
     voices: [
-      { id: "21m00Tcm4TlvDq8ikWAM", label: "Rachel" },
-      { id: "AZnzlk1qvw1trBwP9zvP", label: "Domi" },
-      { id: "EXAVITQu4vr4xnSDxMaL", label: "Bella" },
-      { id: "ErXwobaYiN019PkySvjV", label: "Antoni" },
+      { id: "EXAVITQu4vr4xnSDxMaL", label: "Sarah" },
+      { id: "pNInz6obpgDQGcFmaJgB", label: "Adam" },
+      { id: "nPczCjzI2devNBz1zQrb", label: "Brian" },
+      { id: "Xb7hH8MSUJpSbSDYk0k2", label: "Alice" },
     ],
   },
   {
@@ -44,22 +44,7 @@ export const PROVIDERS: ProviderConfig[] = [
       { id: "hannah", label: "Hannah (Orpheus)" },
     ],
   },
-  {
-    id: "openai",
-    label: "OpenAI Realtime",
-    models: [
-      { id: "gpt-4o-realtime-preview", label: "GPT-4o Realtime" },
-      { id: "gpt-4o-mini-realtime-preview", label: "GPT-4o Mini Realtime" },
-    ],
-    voices: [
-      { id: "alloy", label: "Alloy" },
-      { id: "ash", label: "Ash" },
-      { id: "ballad", label: "Ballad" },
-      { id: "coral", label: "Coral" },
-      { id: "sage", label: "Sage" },
-      { id: "verse", label: "Verse" },
-    ],
-  },
+  // OpenAI omitted: OPENAI_API_KEY not configured
   {
     id: "livekit",
     label: "LiveKit",

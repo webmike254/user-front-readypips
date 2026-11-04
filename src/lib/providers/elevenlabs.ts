@@ -11,7 +11,7 @@ export function createElevenLabsSession(cb: VoiceSessionCallbacks): VoiceSession
   let model = "eleven_turbo_v2_5";
   let voice = "21m00Tcm4TlvDq8ikWAM";
   let language = "mixed";
-  let llmModel = "llama-3.3-70b-versatile";
+  let llmModel = "openai/gpt-oss-20b";
 
   async function processTurn() {
     cb.onState("thinking");

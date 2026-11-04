@@ -29,7 +29,6 @@ export function createLiveKitSession(cb: VoiceSessionCallbacks): VoiceSession {
         }
       });
       cb.onState("idle");
-      cb.onError("LiveKit connected. Publish mic and ensure an agent is in the room for AI responses.");
     },
     async disconnect() {
       await room?.disconnect();
