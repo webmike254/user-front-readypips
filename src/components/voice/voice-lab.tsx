@@ -21,7 +21,7 @@ const LANGS: { id: Language; label: string }[] = [
 ];
 
 export default function VoiceLab() {
-  const [provider, setProvider] = useState<ProviderId>("openai");
+  const [provider, setProvider] = useState<ProviderId>("groq");
   const cfg = PROVIDERS.find((p) => p.id === provider)!;
   const [model, setModel] = useState(cfg.models[0].id);
   const [voice, setVoice] = useState(cfg.voices[0].id);
