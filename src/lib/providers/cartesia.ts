@@ -9,7 +9,7 @@ export function createCartesiaSession(cb: VoiceSessionCallbacks): VoiceSession {
   let stream: MediaStream | null = null;
   let messages: { role: string; content: string }[] = [];
   let model = "sonic-3";
-  let voice = "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4";
+  let voice = "607167f6-9bf2-473c-accc-ac7b3b66b30b";
   let language = "mixed";
   let llmModel = "openai/gpt-oss-20b";
 

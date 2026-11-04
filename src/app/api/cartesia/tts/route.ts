@@ -21,6 +21,7 @@ export async function POST(req: Request) {
         voice,
         output_format: { container: "wav", encoding: "pcm_s16le", sample_rate: 24000 },
         language: "en",
+        generation_config: { volume: 1, speed: 1.1 },
       }),
     });
     if (!res.ok) {

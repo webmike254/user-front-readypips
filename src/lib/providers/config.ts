@@ -53,9 +53,9 @@ export const PROVIDERS: ProviderConfig[] = [
       { id: "sonic-3.5", label: "Sonic 3.5" },
     ],
     voices: [
+      { id: "607167f6-9bf2-473c-accc-ac7b3b66b30b", label: "Brenda" },
+      { id: "f96dc0b1-7900-4894-a339-81fb46d515a7", label: "Steve" },
       { id: "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4", label: "Skylar" },
-      { id: "47c38ca4-5f35-497b-b1a3-415245fb35e1", label: "Daniel" },
-      { id: "62ae83ad-4f6a-430b-af41-a9bede9286ca", label: "Gemma" },
     ],
   },
   {
