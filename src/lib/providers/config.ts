@@ -46,6 +46,19 @@ export const PROVIDERS: ProviderConfig[] = [
   },
   // OpenAI omitted: OPENAI_API_KEY not configured
   {
+    id: "cartesia",
+    label: "Cartesia",
+    models: [
+      { id: "sonic-3", label: "Sonic 3" },
+      { id: "sonic-3.5", label: "Sonic 3.5" },
+    ],
+    voices: [
+      { id: "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4", label: "Skylar" },
+      { id: "47c38ca4-5f35-497b-b1a3-415245fb35e1", label: "Daniel" },
+      { id: "62ae83ad-4f6a-430b-af41-a9bede9286ca", label: "Gemma" },
+    ],
+  },
+  {
     id: "livekit",
     label: "LiveKit",
     models: [{ id: "livekit-agent", label: "LiveKit Agent" }],
