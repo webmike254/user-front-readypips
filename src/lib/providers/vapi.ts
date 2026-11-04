@@ -25,7 +25,7 @@ export function createVapiSession(cb: VoiceSessionCallbacks): VoiceSession {
           cb.onTranscript({ id: crypto.randomUUID(), role: m.role === "user" ? "user" : "assistant", text: m.transcript, at: Date.now() });
         }
       });
-      vapi.on("error", (e: any) => cb.onError(e?.message || "Vapi error"));
+      vapi.on("error", (e: any) => cb.onError("Vapi error: " + (e?.message || JSON.stringify(e))));
     try {
       await vapi.start(opts.model);
     } catch (e: any) {
