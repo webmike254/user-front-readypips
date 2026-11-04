@@ -26,7 +26,11 @@ export function createVapiSession(cb: VoiceSessionCallbacks): VoiceSession {
         }
       });
       vapi.on("error", (e: any) => cb.onError(e?.message || "Vapi error"));
+    try {
       await vapi.start(opts.model);
+    } catch (e: any) {
+      cb.onError("Vapi start failed: " + (e?.message || JSON.stringify(e)));
+    }
       cb.onConnectionTime(Math.round(performance.now() - t0));
     },
     async disconnect() {
