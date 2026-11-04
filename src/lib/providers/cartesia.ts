@@ -16,18 +16,29 @@ export function createCartesiaSession(cb: VoiceSessionCallbacks): VoiceSession {
   let lastFinal = "";
 
   async function speak(text: string, signal: AbortSignal) {
-    const res = await fetch("/api/cartesia/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, model, language }),
-      signal,
-    });
+    let res: Response;
+    if (language === "sw") {
+      res = await fetch("/api/elevenlabs/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, voice: "EXAVITQu4vr4xnSDxMaL", model: "eleven_multilingual_v2" }),
+        signal,
+      });
+    } else {
+      res = await fetch("/api/cartesia/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, voice, model, language }),
+        signal,
+      });
+    }
     if (!res.ok || signal.aborted) return;
     const buf = await res.arrayBuffer();
     if (signal.aborted) return;
     cb.onState("speaking");
     isSpeaking = true;
-    await player?.enqueueArrayBuffer(buf, "audio/wav");
+    const format = language === "sw" ? "audio/mpeg" : "audio/wav";
+    await player?.enqueueArrayBuffer(buf, format);
     isSpeaking = false;
   }
 
