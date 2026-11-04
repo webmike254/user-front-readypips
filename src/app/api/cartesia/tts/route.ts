@@ -7,6 +7,7 @@ export async function POST(req: Request) {
   const text = body?.text || "";
   const voice = body?.voice || "db6b0ed5-d5d3-463d-ae85-518a07d3c2b4";
   const model = body?.model || "sonic-3";
+  const language = body?.language === "sw" ? "sw" : "en";
   try {
     const res = await fetch("https://api.cartesia.ai/tts/bytes", {
       method: "POST",
@@ -20,8 +21,8 @@ export async function POST(req: Request) {
         transcript: text,
         voice,
         output_format: { container: "wav", encoding: "pcm_s16le", sample_rate: 24000 },
-        language: "en",
-        generation_config: { volume: 1, speed: 1.1 },
+        language,
+        generation_config: { volume: 1, speed: 1.25 },
       }),
     });
     if (!res.ok) {

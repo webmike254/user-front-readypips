@@ -19,7 +19,7 @@ export function createCartesiaSession(cb: VoiceSessionCallbacks): VoiceSession {
     const res = await fetch("/api/cartesia/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice, model }),
+      body: JSON.stringify({ text, voice, model, language }),
       signal,
     });
     if (!res.ok || signal.aborted) return;
