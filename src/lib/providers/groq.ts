@@ -57,7 +57,6 @@ export function createGroqSession(cb: VoiceSessionCallbacks): VoiceSession {
       }
     });
     cb.onState("idle");
-    await player?.enqueueArrayBuffer(buf, "audio/wav");
   }
 
   return {
