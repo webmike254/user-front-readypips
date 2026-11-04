@@ -1,4 +1,4 @@
-export type ProviderId = "gemini" | "elevenlabs" | "groq" | "openai" | "livekit" | "cartesia";
+export type ProviderId = "gemini" | "elevenlabs" | "groq" | "openai" | "livekit" | "cartesia" | "vapi";
 
 export type Language = "en" | "sw" | "mixed";
 

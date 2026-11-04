@@ -64,4 +64,12 @@ export const PROVIDERS: ProviderConfig[] = [
     models: [{ id: "livekit-agent", label: "LiveKit Agent" }],
     voices: [{ id: "default", label: "Default" }],
   },
+  {
+    id: "vapi",
+    label: "Vapi",
+    models: [
+      { id: "84b009c6-0634-44e2-9861-13d746e82542", label: "Vapi Assistant" },
+    ],
+    voices: [{ id: "default", label: "Default" }],
+  },
 ];
