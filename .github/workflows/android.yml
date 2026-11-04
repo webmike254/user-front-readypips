@@ -17,6 +17,8 @@ jobs:
           java-version: '17'
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.7
       - name: Build APK
         run: cd android && gradle assembleDebug --no-daemon
         env:
