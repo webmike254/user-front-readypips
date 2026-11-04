@@ -58,23 +58,93 @@ export function createCartesiaSession(cb: VoiceSessionCallbacks): VoiceSession {
 
     cb.onState("thinking");
     const t0 = performance.now();
+    let assistantText = "";
+    const sentences: string[] = [];
+    let sentenceBuffer = "";
+    let isPlayingQueue = false;
+    let playSignal = signal;
+
+    async function playQueue() {
+      if (isPlayingQueue) return;
+      isPlayingQueue = true;
+      while (sentences.length > 0 && !signal.aborted) {
+        const s = sentences.shift()!;
+        await speak(s, signal);
+      }
+      isPlayingQueue = false;
+      if (!signal.aborted) cb.onState("idle");
+    }
+
+    function enqueueSentence(s: string) {
+      if (!s.trim()) return;
+      sentences.push(s.trim());
+      playQueue();
+    }
+
+    function flushSentenceBuffer() {
+      if (sentenceBuffer.trim()) {
+        enqueueSentence(sentenceBuffer);
+        sentenceBuffer = "";
+      }
+    }
+
     try {
       const chatRes = await fetch("/api/groq/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: llmModel, messages, language }),
+        body: JSON.stringify({ model: llmModel, messages, language, stream: true }),
         signal,
       });
-      const chatData = await chatRes.json();
-      if (signal.aborted) return;
-      if (!chatRes.ok) { cb.onError(chatData?.error || "chat failed"); cb.onState("idle"); return; }
-      const assistantText = chatData.text || "";
+      if (!chatRes.ok || !chatRes.body) {
+        const err = await chatRes.text();
+        cb.onError(err || "chat failed");
+        cb.onState("idle");
+        return;
+      }
+      const reader = chatRes.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data:")) continue;
+          const payload = trimmed.slice(5).trim();
+          if (payload === "[DONE]") {
+            flushSentenceBuffer();
+            continue;
+          }
+          try {
+            const json = JSON.parse(payload);
+            if (json.error) { cb.onError(json.error); continue; }
+            const content = json.content || "";
+            if (!content) continue;
+            assistantText += content;
+            sentenceBuffer += content;
+            // sentence boundary
+            const match = sentenceBuffer.match(/^(.*?[.!?])(\s+|$)/);
+            if (match) {
+              enqueueSentence(match[1]);
+              sentenceBuffer = sentenceBuffer.slice(match[0].length);
+            }
+          } catch {}
+        }
+      }
+      flushSentenceBuffer();
+      // wait for playback to finish
+      while (sentences.length > 0 || isPlayingQueue) {
+        await new Promise((r) => setTimeout(r, 50));
+        if (signal.aborted) break;
+      }
       if (assistantText.trim()) {
-        cb.onTranscript({ id: crypto.randomUUID(), role: "assistant", text: assistantText, at: Date.now() });
-        messages.push({ role: "assistant", content: assistantText });
+        cb.onTranscript({ id: crypto.randomUUID(), role: "assistant", text: assistantText.trim(), at: Date.now() });
+        messages.push({ role: "assistant", content: assistantText.trim() });
       }
       cb.onLatency(Math.round(performance.now() - t0));
-      await speak(assistantText, signal);
       if (!signal.aborted) cb.onState("idle");
     } catch (e: any) {
       if (e?.name !== "AbortError") cb.onError(e?.message || "error");
