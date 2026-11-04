@@ -70,6 +70,12 @@ export const PROVIDERS: ProviderConfig[] = [
     models: [
       { id: "84b009c6-0634-44e2-9861-13d746e82542", label: "Vapi Assistant" },
     ],
-    voices: [{ id: "default", label: "Default" }],
+    voices: [
+      { id: "EXAVITQu4vr4xnSDxMaL", label: "Sarah" },
+      { id: "Xb7hH8MSUJpSbSDYk0k2", label: "Alice" },
+      { id: "hpp4J3VqNfWAUOO0d1Us", label: "Bella" },
+      { id: "cgSgspJ2msm6clMCkdW9", label: "Jessica" },
+      { id: "pFZP5JQG7iQjIQuC4Bku", label: "Lily" },
+    ],
   },
 ];

@@ -30,7 +30,7 @@ export function createVapiSession(cb: VoiceSessionCallbacks): VoiceSession {
       await vapi.start(opts.model, {
         firstMessage: "Hello! How can I help you today?",
         model: { provider: "openai", model: "gpt-4o" },
-        voice: { provider: "11labs", voiceId: "EXAVITQu4vr4xnSDxMaL" },
+        voice: { provider: "11labs", voiceId: opts.voice || "EXAVITQu4vr4xnSDxMaL" },
       });
     } catch (e: any) {
       cb.onError("Vapi start failed: " + (e?.message || JSON.stringify(e)));
