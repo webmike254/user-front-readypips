@@ -12,6 +12,7 @@
         android:allowBackup="true"
         android:label="Twiga Dialer"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -20,26 +21,28 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ContactsActivity" />
         <activity android:name=".CallHistoryActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AIToggleActivity" />
-    <service
-        android:name=".telecom.TwigaConnectionService"
-    </application>
-        android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.telecom.ConnectionService" />
-        </intent-filter>
-    </service>
 
-    <service
-        android:name=".telecom.TwigaInCallService"
-        android:permission="android.permission.BIND_INCALL_SERVICE"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.telecom.InCallService" />
-        </intent-filter>
-    </service>
+        <service
+            android:name=".telecom.TwigaConnectionService"
+            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.ConnectionService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".telecom.TwigaInCallService"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+    </application>
 </manifest>
