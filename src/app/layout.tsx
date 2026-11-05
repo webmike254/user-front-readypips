@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <div className="bg-orange-500 text-white text-center py-2 text-sm">
-          <a href="/twiga-dialer.apk" download className="underline font-semibold">Download Android Dialer APK</a>
+          <a href="https://github.com/webmike254/user-front-readypips/releases/download/v1.0/twiga-dialer.apk" download className="underline font-semibold">Download Android Dialer APK</a>
         </div>
         {children}
       </body>
