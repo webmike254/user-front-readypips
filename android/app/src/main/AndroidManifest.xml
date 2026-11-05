@@ -24,5 +24,22 @@
         <activity android:name=".CallHistoryActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AIToggleActivity" />
+    <service
+        android:name=".telecom.TwigaConnectionService"
     </application>
+        android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.telecom.ConnectionService" />
+        </intent-filter>
+    </service>
+
+    <service
+        android:name=".telecom.TwigaInCallService"
+        android:permission="android.permission.BIND_INCALL_SERVICE"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="android.telecom.InCallService" />
+        </intent-filter>
+    </service>
 </manifest>
