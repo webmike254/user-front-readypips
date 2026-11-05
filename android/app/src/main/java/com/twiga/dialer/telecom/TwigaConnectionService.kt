@@ -4,6 +4,7 @@ import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.ConnectionService
 import android.telecom.PhoneAccountHandle
+import android.telecom.TelecomManager
 
 class TwigaConnectionService : ConnectionService() {
     override fun onCreateOutgoingConnection(
@@ -11,7 +12,7 @@ class TwigaConnectionService : ConnectionService() {
         request: ConnectionRequest?
     ): Connection {
         val connection = TwigaConnection()
-        connection.setAddress(request?.address, Connection.PRESENTATION_ALLOWED)
+        connection.setAddress(request?.address, TelecomManager.PRESENTATION_ALLOWED)
         connection.setInitializing()
         connection.setActive()
         return connection
@@ -22,7 +23,7 @@ class TwigaConnectionService : ConnectionService() {
         request: ConnectionRequest?
     ): Connection {
         val connection = TwigaConnection()
-        connection.setAddress(request?.address, Connection.PRESENTATION_ALLOWED)
+        connection.setAddress(request?.address, TelecomManager.PRESENTATION_ALLOWED)
         connection.setRinging()
         return connection
     }
